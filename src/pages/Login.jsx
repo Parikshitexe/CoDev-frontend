@@ -1,19 +1,48 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Terminal } from "lucide-react";
+import { useState } from "react";
 
 function Login() {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Frontend-only right now: simulate login and redirect to dashboard
-    navigate("/dashboard");
+    setError("");
+    setLoading(true);
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    try {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
       
-      {/* Background Gradient */}
       <div
         className="absolute inset-0 z-0 pointer-events-none opacity-20"
         style={{
@@ -21,7 +50,6 @@ function Login() {
         }}
       />
 
-      {/* Top Navbar */}
       <nav className="absolute top-0 w-full max-w-6xl mx-auto flex items-center justify-between p-6 z-10">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Terminal className="text-primary w-6 h-6" />
@@ -31,18 +59,22 @@ function Login() {
         </Link>
       </nav>
 
-      {/* Main Login Card */}
       <main className="z-10 w-full max-w-md p-8 bg-card border border-border shadow-[0_4px_30px_var(--shadow-color)] rounded-2xl flex flex-col items-center relative">
         <div className="absolute -top-6 w-12 h-12 bg-primary rounded-xl flex items-center justify-center border border-border shadow-lg transform rotate-3">
            <Terminal className="w-6 h-6 text-primary-foreground transform -rotate-3" />
         </div>
         
         <h2 className="text-3xl font-bold mt-4 mb-2 text-foreground text-center">Welcome Back</h2>
-        <p className="text-muted-foreground text-sm mb-8 text-center px-4">
+        <p className="text-muted-foreground text-sm mb-6 text-center px-4">
           Sign in to access your permanent workspaces.
         </p>
+
+        {error && (
+          <div className="w-full p-3 mb-4 text-xs font-semibold bg-destructive/10 border border-destructive/20 text-destructive rounded-lg text-center animate-in fade-in duration-300">
+            {error}
+          </div>
+        )}
         
-        {/* OAuth Buttons */}
         <div className="w-full flex flex-col gap-3 mb-6">
           <button className="flex items-center justify-center gap-3 w-full p-3 rounded-lg bg-background border border-border hover:bg-muted transition-colors font-medium">
             <svg viewBox="0 0 24 24" className="w-5 h-5 text-foreground" fill="currentColor">
@@ -68,12 +100,12 @@ function Login() {
           <div className="flex-1 border-t border-border"></div>
         </div>
 
-        {/* Email Form */}
         <form onSubmit={handleLogin} className="flex flex-col gap-4 w-full">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-foreground ml-1">Email Address</label>
             <input
               type="email"
+              name="email"
               required
               placeholder="Enter your email"
               className="p-3 rounded-lg bg-input border border-border focus:border-ring focus:ring-1 focus:ring-ring outline-none transition-all text-foreground"
@@ -86,13 +118,18 @@ function Login() {
             </label>
             <input
               type="password"
+              name="password"
               required
               placeholder="Enter your password"
               className="p-3 rounded-lg bg-input border border-border focus:border-ring focus:ring-1 focus:ring-ring outline-none transition-all text-foreground"
             />
           </div>
-          <button className="mt-2 p-3 rounded-lg bg-primary hover:brightness-110 text-primary-foreground font-bold transition-all shadow-[0_0_15px_rgba(249,115,22,0.3)]">
-            Sign In
+          <button 
+            type="submit"
+            disabled={loading}
+            className="mt-2 p-3 rounded-lg bg-primary hover:brightness-110 text-primary-foreground font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(249,115,22,0.3)]"
+          >
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
