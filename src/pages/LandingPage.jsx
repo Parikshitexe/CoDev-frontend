@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Zap, Copy, Eye, Terminal, ArrowRight } from "lucide-react";
 
@@ -30,9 +30,9 @@ function LandingPage() {
             Code<span className="text-primary">V</span>
           </span>
         </div>
-        <div className="flex items-center gap-4 text-muted-foreground font-medium text-sm">
-          <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
-          <a href="#" className="hover:text-foreground transition-colors">GitHub</a>
+        <div className="flex items-center gap-6 font-medium text-sm">
+          <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">Sign In</Link>
+          <Link to="/register" className="bg-primary/10 text-primary hover:bg-primary/20 px-4 py-2 rounded-lg transition-colors">Sign Up</Link>
         </div>
       </nav>
 
