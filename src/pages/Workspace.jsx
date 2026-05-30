@@ -22,6 +22,8 @@ function Workspace() {
   const [isExecuting, setIsExecuting] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customInput, setCustomInput] = useState("");
 
   // Shared document
   const ydoc = useMemo(() => new Y.Doc(), []);
@@ -133,7 +135,11 @@ function Workspace() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ code, language })
+        body: JSON.stringify({ 
+          code, 
+          language,
+          input: showCustomInput ? customInput : "" 
+        })
       });
 
       const data = await response.json();
@@ -301,11 +307,39 @@ function Workspace() {
 
           {/* Terminal Area (Bottom 30%) */}
           <div className="flex-[3] bg-black border-t-2 border-border flex flex-col">
-            <div className="bg-card px-4 py-2 border-b border-border flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              <Terminal className="w-4 h-4" /> Output Terminal
+            <div className="bg-card px-4 py-2 border-b border-border flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider select-none shrink-0">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4" /> Output Terminal
+              </div>
+              <label className="flex items-center gap-1.5 cursor-pointer hover:text-foreground transition-colors">
+                <input 
+                  type="checkbox" 
+                  checked={showCustomInput} 
+                  onChange={(e) => setShowCustomInput(e.target.checked)}
+                  className="accent-primary w-3 h-3 rounded bg-input border border-border"
+                />
+                Custom Input
+              </label>
             </div>
-            <div className="p-4 overflow-y-auto font-mono text-sm text-green-400 whitespace-pre-wrap flex-1">
-              {terminalOutput || <span className="text-gray-600 italic">No output yet. Click 'Run Code' to execute.</span>}
+            
+            <div className="flex-1 flex overflow-hidden">
+              <div className="flex-1 p-4 overflow-y-auto font-mono text-sm text-green-400 whitespace-pre-wrap">
+                {terminalOutput || <span className="text-gray-600 italic">No output yet. Click 'Run Code' to execute.</span>}
+              </div>
+              
+              {showCustomInput && (
+                <div className="w-80 border-l border-border bg-[#121212] flex flex-col shrink-0 animate-in slide-in-from-right-4 duration-300">
+                  <div className="px-4 py-1.5 border-b border-border bg-card text-[10px] font-bold text-muted-foreground uppercase tracking-wider select-none shrink-0">
+                    Input Stdin
+                  </div>
+                  <textarea 
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    placeholder="Enter inputs here (one per line)..."
+                    className="flex-1 p-3 bg-transparent text-sm text-foreground font-mono placeholder:text-gray-600 resize-none outline-none border-none"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </section>
