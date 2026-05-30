@@ -117,19 +117,48 @@ function Workspace() {
     ySettings.set("language", e.target.value);
   };
 
-  const handleRunCode = () => {
-    // 1. Lock the execution globally
+  const handleRunCode = async () => {
+    if (!editorRef.current) return;
+
+    const code = editorRef.current.getValue();
+    if (!code.trim()) return;
+
     ySettings.set("isExecuting", true);
-    
-    // 2. Clear terminal
     yTerminal.delete(0, yTerminal.length);
     yTerminal.insert(0, "> Executing code...\n");
 
-    // Mock API call delay
-    setTimeout(() => {
-      yTerminal.insert(yTerminal.length, `> Hello from ${language}!\n> Process completed.\n`);
-      ySettings.set("isExecuting", false); // Release lock
-    }, 1500);
+    try {
+      const response = await fetch("http://localhost:3000/api/execute", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code, language })
+      });
+
+      const data = await response.json();
+
+      yTerminal.delete(0, yTerminal.length);
+
+      if (!response.ok) {
+        yTerminal.insert(0, `> Error: ${data.error || "Execution failed"}\n`);
+      } else {
+        if (data.stdout) {
+          yTerminal.insert(0, data.stdout);
+        }
+        if (data.stderr) {
+          yTerminal.insert(yTerminal.length, data.stderr);
+        }
+        if (!data.stdout && !data.stderr) {
+          yTerminal.insert(0, "> Program completed with no output.\n");
+        }
+      }
+    } catch (err) {
+      yTerminal.delete(0, yTerminal.length);
+      yTerminal.insert(0, `> Error: ${err.message || "Could not connect to execution server."}\n`);
+    } finally {
+      ySettings.set("isExecuting", false);
+    }
   };
 
   const handleSendMessage = (e) => {
