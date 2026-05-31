@@ -6,12 +6,40 @@ import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 import { Terminal, Users, Play, MessageSquare, Send } from "lucide-react";
 
+const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  ? "http://localhost:3000"
+  : `http://${window.location.hostname}:3000`;
+
+const colors = ["#f97316", "#e11d48", "#2563eb", "#16a34a", "#9333ea"];
+const stringToColor = (str) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
+};
+
 function Workspace() {
   const { roomId } = useParams();
   const editorRef = useRef(null);
 
   const [username, setUsername] = useState(() => {
-    return new URLSearchParams(window.location.search).get("username") || "";
+    const urlName = new URLSearchParams(window.location.search).get("username");
+    if (urlName) return urlName;
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.username) {
+          return parsed.username;
+        }
+      } catch (err) {
+        // Fallback
+      }
+    }
+    return "";
   });
 
   const [users, setUsers] = useState([]);
@@ -24,41 +52,204 @@ function Workspace() {
   const [chatInput, setChatInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customInput, setCustomInput] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showShareTooltip, setShowShareTooltip] = useState(false);
+  const [isRoomFull, setIsRoomFull] = useState(false);
 
-  // Shared document
-  const ydoc = useMemo(() => new Y.Doc(), []);
+  const [ydoc, setYdoc] = useState(null);
+  const [provider, setProvider] = useState(null);
 
-  // Yjs Shared Types
-  const yText = useMemo(() => ydoc.getText("monaco"), [ydoc]);
-  const ySettings = useMemo(() => ydoc.getMap("settings"), [ydoc]);
-  const yTerminal = useMemo(() => ydoc.getText("terminal"), [ydoc]);
-  const yChat = useMemo(() => ydoc.getArray("chat"), [ydoc]);
+  const yText = useMemo(() => ydoc ? ydoc.getText("monaco") : null, [ydoc]);
+  const ySettings = useMemo(() => ydoc ? ydoc.getMap("settings") : null, [ydoc]);
+  const yTerminal = useMemo(() => ydoc ? ydoc.getText("terminal") : null, [ydoc]);
+  const yChat = useMemo(() => ydoc ? ydoc.getArray("chat") : null, [ydoc]);
 
-  // SINGLE provider instance, using the roomId to separate sessions
-  const provider = useMemo(() => {
-    return new SocketIOProvider(
-      "http://localhost:3000",
-      roomId, // Connect to the specific room ID
-      ydoc,
-      { autoConnect: true }
-    );
-  }, [ydoc, roomId]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+      const checkBookmark = async () => {
+        try {
+          const response = await fetch(`${SERVER_URL}/api/workspaces/${roomId}/status`, {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setIsBookmarked(data.bookmarked);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      checkBookmark();
+    }
+  }, [roomId]);
 
-  // Setup Yjs Observers
+  const handleBookmark = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const response = await fetch(`${SERVER_URL}/api/workspaces`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          roomId,
+          name: `Workspace ${roomId.slice(0, 6)}`
+        })
+      });
+      if (response.ok) {
+        setIsBookmarked(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleShareWorkspace = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setShowShareTooltip(true);
+    setTimeout(() => setShowShareTooltip(false), 2000);
+  };
+
   useEffect(() => {
     if (!username) return;
 
-    // 1. Awareness (Users)
-    provider.awareness.setLocalStateField("user", { name: username });
+    const doc = new Y.Doc();
+    const prov = new SocketIOProvider(
+      SERVER_URL,
+      roomId,
+      doc,
+      {
+        autoConnect: true,
+        transports: ["websocket"]
+      }
+    );
+
+    setYdoc(doc);
+    setProvider(prov);
+
+    return () => {
+      prov.disconnect();
+      doc.destroy();
+      setYdoc(null);
+      setProvider(null);
+    };
+  }, [username, roomId]);
+
+  useEffect(() => {
+    if (!provider) return;
+
+    const handleConnect = () => {
+      console.log("⚡ Socket connected successfully to room:", roomId);
+      setIsRoomFull(false);
+    };
+    const handleConnectError = (err) => {
+      console.error("❌ Socket connection error:", err.message);
+      if (err.message === "ROOM_FULL") {
+        setIsRoomFull(true);
+      }
+    };
+    const handleDisconnect = (reason) => console.warn("⚠️ Socket disconnected:", reason);
+
+    provider.socket.on("connect", handleConnect);
+    provider.socket.on("connect_error", handleConnectError);
+    provider.socket.on("disconnect", handleDisconnect);
+
+    if (provider.socket.connected) {
+      handleConnect();
+    }
+
+    return () => {
+      provider.socket.off("connect", handleConnect);
+      provider.socket.off("connect_error", handleConnectError);
+      provider.socket.off("disconnect", handleDisconnect);
+    };
+  }, [provider, roomId]);
+
+  useEffect(() => {
+    if (!ydoc || !provider || !username || !ySettings || !yTerminal || !yChat) return;
+
+    const userColor = stringToColor(username);
+    provider.awareness.setLocalStateField("user", { name: username, color: userColor });
+    
     const updateUsers = () => {
-      const states = Array.from(provider.awareness.getStates().values());
-      const activeUsers = states.filter(state => state.user).map(state => state.user);
+      const states = Array.from(provider.awareness.getStates());
+      const sortedStates = states.filter(([_, s]) => s.user && s.user.name).sort((a, b) => a[0] - b[0]);
+      
+      const seen = new Set();
+      const activeUsers = [];
+      sortedStates.forEach(([clientId, state], index) => {
+        if (!seen.has(state.user.name)) {
+          seen.add(state.user.name);
+          const color = colors[index % colors.length];
+          activeUsers.push({
+            name: state.user.name,
+            color: color
+          });
+        }
+      });
       setUsers(activeUsers);
+
+      sortedStates.forEach(([clientId, state], index) => {
+        const color = colors[index % colors.length];
+        const name = state.user.name;
+        const styleId = `yjs-cursor-style-${clientId}`;
+        let styleEl = document.getElementById(styleId);
+        if (!styleEl) {
+          styleEl = document.createElement("style");
+          styleEl.id = styleId;
+          document.head.appendChild(styleEl);
+        }
+        styleEl.innerText = `
+          .yRemoteSelection-${clientId} {
+            background-color: ${color}2B;
+          }
+          .yRemoteSelectionHead-${clientId} {
+            position: absolute;
+            border-left: 2px solid ${color};
+            border-top: 2px solid ${color};
+            border-bottom: 2px solid ${color};
+            height: 100%;
+            box-sizing: border-box;
+          }
+          .yRemoteSelectionHead-${clientId}::after {
+            content: '${name}';
+            position: absolute;
+            top: -14px;
+            left: -2px;
+            background-color: ${color};
+            color: white;
+            font-family: sans-serif;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 0 4px;
+            border-radius: 2px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          }
+        `;
+      });
+
+      const activeClientIds = new Set(sortedStates.map(([clientId]) => clientId));
+      const styleElements = document.querySelectorAll("[id^='yjs-cursor-style-']");
+      styleElements.forEach(el => {
+        const id = parseInt(el.id.replace("yjs-cursor-style-", ""));
+        if (!activeClientIds.has(id)) {
+          el.remove();
+        }
+      });
     };
     provider.awareness.on("change", updateUsers);
     updateUsers();
 
-    // 2. Settings (Language & Execution Lock)
     const updateSettings = () => {
       const lang = ySettings.get("language") || "javascript";
       const exec = ySettings.get("isExecuting") || false;
@@ -68,12 +259,10 @@ function Workspace() {
     ySettings.observe(updateSettings);
     updateSettings();
 
-    // 3. Terminal Output
     const updateTerminal = () => setTerminalOutput(yTerminal.toString());
     yTerminal.observe(updateTerminal);
     updateTerminal();
 
-    // 4. Chat Messages
     const updateChat = () => setChatMessages(yChat.toArray());
     yChat.observe(updateChat);
     updateChat();
@@ -88,11 +277,12 @@ function Workspace() {
       yChat.unobserve(updateChat);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [provider, username, ySettings, yTerminal, yChat]);
+  }, [provider, ydoc, username, ySettings, yTerminal, yChat]);
 
-  // Editor mount
   const handleMount = (editor) => {
     editorRef.current = editor;
+    if (!yText || !provider) return;
+
     const binding = new MonacoBinding(
       yText,
       editor.getModel(),
@@ -105,7 +295,6 @@ function Workspace() {
     });
   };
 
-  // Join form
   const handleJoin = (e) => {
     e.preventDefault();
     const enteredUsername = e.target.username.value;
@@ -114,13 +303,13 @@ function Workspace() {
     window.history.replaceState({}, "", `/${roomId}?username=${enteredUsername}`);
   };
 
-  // Actions
   const handleLanguageChange = (e) => {
+    if (!ySettings) return;
     ySettings.set("language", e.target.value);
   };
 
   const handleRunCode = async () => {
-    if (!editorRef.current) return;
+    if (!editorRef.current || !ySettings || !yTerminal) return;
 
     const code = editorRef.current.getValue();
     if (!code.trim()) return;
@@ -130,7 +319,7 @@ function Workspace() {
     yTerminal.insert(0, "> Executing code...\n");
 
     try {
-      const response = await fetch("http://localhost:3000/api/execute", {
+      const response = await fetch(`${SERVER_URL}/api/execute`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -169,7 +358,7 @@ function Workspace() {
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || !yChat) return;
     
     yChat.push([{
       sender: username,
@@ -180,15 +369,26 @@ function Workspace() {
     setChatInput("");
   };
 
-  // Global cleanup
-  useEffect(() => {
-    return () => {
-      provider.disconnect();
-      ydoc.destroy();
-    };
-  }, [provider, ydoc]);
+  if (isRoomFull) {
+    return (
+      <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 60%)" }} />
+        <main className="z-10 w-full max-w-md p-8 bg-card border border-border shadow-xl rounded-2xl flex flex-col items-center">
+          <div className="w-16 h-16 bg-red-950/40 text-red-500 rounded-2xl flex items-center justify-center border border-red-900/50 mb-6 shadow-sm">
+             <Users className="w-8 h-8" />
+          </div>
+          <h2 className="text-3xl font-bold mb-2 text-foreground text-center">Room is Full</h2>
+          <p className="text-muted-foreground text-sm mb-8 text-center px-4">
+            This collaborative workspace is limited to 5 active members to ensure peak real-time performance.
+          </p>
+          <a href="/dashboard" className="w-full text-center p-3 rounded-lg bg-primary hover:brightness-110 text-primary-foreground font-bold transition-all shadow-md">
+            Back to Dashboard
+          </a>
+        </main>
+      </div>
+    );
+  }
 
-  // --- LOGIN SCREEN ---
   if (!username) {
     return (
       <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
@@ -211,6 +411,18 @@ function Workspace() {
     );
   }
 
+  if (username && (!ydoc || !provider)) {
+    return (
+      <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 60%)" }} />
+        <main className="z-10 flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted-foreground text-sm font-semibold tracking-wide">Connecting to room namespace...</p>
+        </main>
+      </div>
+    );
+  }
+
   // --- IDE UI ---
   return (
     <div className="dark h-screen w-full bg-background flex flex-col font-sans overflow-hidden text-foreground">
@@ -218,9 +430,22 @@ function Workspace() {
       {/* Top Header */}
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0 shadow-sm z-10">
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 border-r border-border pr-6">
-            <Terminal className="text-primary w-5 h-5" />
-            <span className="font-bold tracking-wide hidden sm:block">Code<span className="text-primary">V</span></span>
+          <div className="flex items-center gap-4 border-r border-border pr-6">
+            <button 
+              onClick={() => navigate(isLoggedIn ? "/dashboard" : "/")}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent border-none outline-none cursor-pointer text-foreground"
+            >
+              <Terminal className="text-primary w-5 h-5" />
+              <span className="font-bold tracking-wide hidden sm:block">Code<span className="text-primary">V</span></span>
+            </button>
+            {isLoggedIn && (
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors bg-muted px-2.5 py-1 rounded-md border border-border cursor-pointer"
+              >
+                Dashboard
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <select 
@@ -242,6 +467,33 @@ function Workspace() {
             Room: <span className="font-mono text-foreground">{roomId}</span>
           </div>
           
+          {isLoggedIn && (
+            <button
+              onClick={handleBookmark}
+              disabled={isBookmarked}
+              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md font-bold text-sm border transition-all
+                ${isBookmarked
+                  ? "bg-transparent text-primary border-primary/20 cursor-default"
+                  : "bg-primary hover:brightness-110 text-primary-foreground border-transparent shadow-[0_0_10px_rgba(249,115,22,0.3)]"}`}
+            >
+              ⭐ {isBookmarked ? "Saved" : "Save to Dashboard"}
+            </button>
+          )}
+
+          <div className="relative">
+            <button
+              onClick={handleShareWorkspace}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-md font-bold text-sm border border-border bg-card text-foreground hover:bg-muted transition-colors"
+            >
+              Share
+            </button>
+            {showShareTooltip && (
+              <div className="absolute right-0 top-10 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-md select-none animate-in fade-in slide-in-from-top-2 duration-150 shrink-0 whitespace-nowrap">
+                Link Copied!
+              </div>
+            )}
+          </div>
+
           <button 
             onClick={handleRunCode}
             disabled={isExecuting}
@@ -272,7 +524,11 @@ function Workspace() {
           <ul className="p-2 md:p-3 flex-1 overflow-y-auto space-y-2">
             {users.map((user, index) => (
               <li key={index} className="p-2 md:p-2.5 bg-card border border-border rounded-lg flex items-center justify-center md:justify-start gap-3 shadow-sm hover:border-primary/50 transition-colors">
-                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-inner shrink-0" title={user.name}>
+                <div 
+                  className="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-inner shrink-0" 
+                  style={{ backgroundColor: user.color || "#f97316" }}
+                  title={user.name}
+                >
                   {user.name.charAt(0).toUpperCase()}
                 </div>
                 <span className="font-medium text-sm text-foreground truncate hidden md:block">{user.name}</span>
