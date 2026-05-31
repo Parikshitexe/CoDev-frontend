@@ -61,6 +61,12 @@ function Login() {
             {error}
           </div>
         )}
+
+        {new URLSearchParams(window.location.search).get("expired") === "true" && !error && (
+          <div className="w-full p-3 mb-4 text-xs bg-primary/10 border border-primary/20 text-primary rounded-md text-center font-medium">
+            Your session has expired. Please sign in again.
+          </div>
+        )}
         
         <div className="flex flex-col gap-2.5 mb-6">
           <button className="flex items-center justify-center gap-2.5 w-full p-2.5 rounded-md bg-card border border-border hover:bg-muted transition-colors text-sm font-medium">

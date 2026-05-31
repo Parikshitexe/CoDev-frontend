@@ -57,6 +57,7 @@ function Workspace() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareTooltip, setShowShareTooltip] = useState(false);
   const [isRoomFull, setIsRoomFull] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState("connecting");
 
   const [ydoc, setYdoc] = useState(null);
   const [provider, setProvider] = useState(null);
@@ -80,6 +81,10 @@ function Workspace() {
           if (response.ok) {
             const data = await response.json();
             setIsBookmarked(data.bookmarked);
+          } else if (response.status === 401 || response.status === 400) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            navigate("/login?expired=true");
           }
         } catch (err) {
           console.error(err);
@@ -106,6 +111,10 @@ function Workspace() {
       });
       if (response.ok) {
         setIsBookmarked(true);
+      } else if (response.status === 401 || response.status === 400) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login?expired=true");
       }
     } catch (err) {
       console.error(err);
@@ -150,18 +159,28 @@ function Workspace() {
     const handleConnect = () => {
       console.log("Socket connected to room:", roomId);
       setIsRoomFull(false);
+      setConnectionStatus("connected");
     };
     const handleConnectError = (err) => {
       console.error("Socket connection error:", err.message);
       if (err.message === "ROOM_FULL") {
         setIsRoomFull(true);
+      } else {
+        setConnectionStatus("disconnected");
       }
     };
-    const handleDisconnect = (reason) => console.warn("Socket disconnected:", reason);
+    const handleDisconnect = (reason) => {
+      console.warn("Socket disconnected:", reason);
+      setConnectionStatus("disconnected");
+    };
+    const handleReconnectAttempt = () => {
+      setConnectionStatus("connecting");
+    };
 
     provider.socket.on("connect", handleConnect);
     provider.socket.on("connect_error", handleConnectError);
     provider.socket.on("disconnect", handleDisconnect);
+    provider.socket.on("reconnect_attempt", handleReconnectAttempt);
 
     if (provider.socket.connected) {
       handleConnect();
@@ -171,6 +190,7 @@ function Workspace() {
       provider.socket.off("connect", handleConnect);
       provider.socket.off("connect_error", handleConnectError);
       provider.socket.off("disconnect", handleDisconnect);
+      provider.socket.off("reconnect_attempt", handleReconnectAttempt);
     };
   }, [provider, roomId]);
 
@@ -421,6 +441,12 @@ function Workspace() {
 
   return (
     <div className="dark h-screen w-full bg-background flex flex-col font-sans overflow-hidden text-foreground">
+      {connectionStatus === "disconnected" && (
+        <div className="bg-destructive/15 border-b border-destructive/20 text-destructive text-[11px] sm:text-xs py-1.5 px-3 flex items-center justify-center font-medium gap-1.5 select-none shrink-0 z-20">
+          <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-ping shrink-0" />
+          <span>Offline. Changes are saved locally but not syncing. Attempting to reconnect...</span>
+        </div>
+      )}
       
       <header className="h-12 border-b border-border bg-card flex items-center justify-between px-3 shrink-0 z-10">
         <div className="flex items-center gap-4">
@@ -455,7 +481,10 @@ function Workspace() {
         
         <div className="flex items-center gap-2">
           <div className="text-xs text-muted-foreground hidden md:flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-chart-2"></span>
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              connectionStatus === "connected" ? "bg-chart-2" :
+              connectionStatus === "connecting" ? "bg-chart-3 animate-pulse" : "bg-destructive animate-ping"
+            }`}></span>
             <span className="font-mono">{roomId.slice(0, 8)}</span>
           </div>
           

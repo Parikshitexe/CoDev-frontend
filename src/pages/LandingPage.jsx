@@ -95,7 +95,7 @@ function LandingPage() {
         </h1>
 
         <p className="text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed">
-          A fast, minimal collaborative editor. Create a room, share the link, and code side-by-side with your team — no setup needed.
+          A fast, minimal collaborative editor. Create a room, share the link, and code side-by-side with your team no setup needed.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -120,7 +120,7 @@ function LandingPage() {
                 onClick={handleCreateRoom}
                 className="flex items-center justify-center gap-2 px-7 py-3 bg-primary hover:opacity-90 text-primary-foreground font-semibold rounded-lg transition-opacity text-sm"
               >
-                Start coding — it's free <ArrowRight className="w-4 h-4" />
+                Start coding it's free! <ArrowRight className="w-4 h-4" />
               </button>
               <button 
                 onClick={() => navigate("/login")}
@@ -144,7 +144,7 @@ function LandingPage() {
               <div className="w-3 h-3 rounded-full bg-yellow-400/70"></div>
               <div className="w-3 h-3 rounded-full bg-green-400/70"></div>
             </div>
-            <span className="text-xs text-muted-foreground ml-2 font-mono">workspace — CoDev</span>
+            <span className="text-xs text-muted-foreground ml-2 font-mono">workspace CoDev</span>
           </div>
           {/* Content area */}
           <div className="flex">
@@ -156,16 +156,16 @@ function LandingPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-[#d2a8ff]/30 text-[#d2a8ff] text-[9px] font-semibold flex items-center justify-center">A</div>
-                  <span className="text-xs text-sidebar-foreground">alice</span>
+                  <span className="text-xs text-sidebar-foreground">Adarsh</span>
                   <span className="text-[9px] text-muted-foreground ml-auto">you</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-[#7ee787]/30 text-[#7ee787] text-[9px] font-semibold flex items-center justify-center">B</div>
-                  <span className="text-xs text-sidebar-foreground">bob</span>
+                  <span className="text-xs text-sidebar-foreground">Ravina</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-[#79c0ff]/30 text-[#79c0ff] text-[9px] font-semibold flex items-center justify-center">C</div>
-                  <span className="text-xs text-sidebar-foreground">charlie</span>
+                  <span className="text-xs text-sidebar-foreground">Manish</span>
                 </div>
               </div>
             </div>
@@ -182,12 +182,12 @@ function LandingPage() {
               <p className="text-[10px] text-muted-foreground font-medium mb-3">Chat</p>
               <div className="space-y-2 flex-1">
                 <div>
-                  <p className="text-[9px] text-muted-foreground">bob · 2:14 PM</p>
-                  <p className="text-xs bg-card border border-border rounded-md px-2 py-1 mt-0.5 text-foreground">refactored the greet fn</p>
+                  <p className="text-[9px] text-muted-foreground">Manish · 2:14 PM</p>
+                  <p className="text-xs bg-card border border-border rounded-md px-2 py-1 mt-0.5 text-foreground">your nested loop logic is wrong</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] text-muted-foreground">alice · 2:15 PM</p>
-                  <p className="text-xs bg-primary/15 rounded-md px-2 py-1 mt-0.5 text-foreground inline-block">looks great! 🚀</p>
+                  <p className="text-[9px] text-muted-foreground">Adarsh · 2:15 PM</p>
+                  <p className="text-xs bg-primary/15 rounded-md px-2 py-1 mt-0.5 text-foreground inline-block">lets fix it</p>
                 </div>
               </div>
             </div>
@@ -199,7 +199,7 @@ function LandingPage() {
       <section className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-24">
         <div className="text-center mb-14">
           <h2 className="text-3xl font-bold tracking-tight mb-3">Everything you need to collaborate</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">Built for speed and simplicity. No bloat, no configuration — just open and code.</p>
+          <p className="text-muted-foreground max-w-lg mx-auto">Built for speed and simplicity. No bloat, no configuration just open and code.</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

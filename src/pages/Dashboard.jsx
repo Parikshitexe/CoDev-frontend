@@ -40,6 +40,10 @@ function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           setWorkspaces(data);
+        } else if (response.status === 401 || response.status === 400) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login?expired=true");
         }
       } catch (err) {
         console.error(err);
@@ -73,6 +77,10 @@ function Dashboard() {
 
       if (response.ok) {
         navigate(`/${newRoomId}`);
+      } else if (response.status === 401 || response.status === 400) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login?expired=true");
       }
     } catch (err) {
       console.error(err);
@@ -91,6 +99,10 @@ function Dashboard() {
 
       if (response.ok) {
         setWorkspaces(prev => prev.filter(w => w.roomId !== roomId));
+      } else if (response.status === 401 || response.status === 400) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login?expired=true");
       }
     } catch (err) {
       console.error(err);
