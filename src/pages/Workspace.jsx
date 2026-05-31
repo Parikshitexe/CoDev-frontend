@@ -1,16 +1,16 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Editor } from "@monaco-editor/react";
 import { MonacoBinding } from "y-monaco";
 import { useRef, useMemo, useState, useEffect } from "react";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
-import { Terminal, Users, Play, MessageSquare, Send } from "lucide-react";
+import { Code2, Users, Play, MessageSquare, Send } from "lucide-react";
 
 const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
   ? "http://localhost:3000"
   : `http://${window.location.hostname}:3000`;
 
-const colors = ["#f97316", "#e11d48", "#2563eb", "#16a34a", "#9333ea"];
+const colors = ["#c4b5fd", "#6ee7b7", "#93c5fd", "#fcd34d", "#fca5a5"];
 const stringToColor = (str) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -22,6 +22,7 @@ const stringToColor = (str) => {
 
 function Workspace() {
   const { roomId } = useParams();
+  const navigate = useNavigate();
   const editorRef = useRef(null);
 
   const [username, setUsername] = useState(() => {
@@ -112,7 +113,8 @@ function Workspace() {
   };
 
   const handleShareWorkspace = () => {
-    navigator.clipboard.writeText(window.location.href);
+    const cleanUrl = `${window.location.origin}/${roomId}`;
+    navigator.clipboard.writeText(cleanUrl);
     setShowShareTooltip(true);
     setTimeout(() => setShowShareTooltip(false), 2000);
   };
@@ -146,16 +148,16 @@ function Workspace() {
     if (!provider) return;
 
     const handleConnect = () => {
-      console.log("⚡ Socket connected successfully to room:", roomId);
+      console.log("Socket connected to room:", roomId);
       setIsRoomFull(false);
     };
     const handleConnectError = (err) => {
-      console.error("❌ Socket connection error:", err.message);
+      console.error("Socket connection error:", err.message);
       if (err.message === "ROOM_FULL") {
         setIsRoomFull(true);
       }
     };
-    const handleDisconnect = (reason) => console.warn("⚠️ Socket disconnected:", reason);
+    const handleDisconnect = (reason) => console.warn("Socket disconnected:", reason);
 
     provider.socket.on("connect", handleConnect);
     provider.socket.on("connect_error", handleConnectError);
@@ -224,16 +226,15 @@ function Workspace() {
             top: -14px;
             left: -2px;
             background-color: ${color};
-            color: white;
-            font-family: sans-serif;
-            font-size: 8px;
-            font-weight: bold;
-            padding: 0 4px;
-            border-radius: 2px;
+            color: #0d1117;
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 3px;
             white-space: nowrap;
             pointer-events: none;
             z-index: 10;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
           }
         `;
       });
@@ -372,17 +373,14 @@ function Workspace() {
   if (isRoomFull) {
     return (
       <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 60%)" }} />
-        <main className="z-10 w-full max-w-md p-8 bg-card border border-border shadow-xl rounded-2xl flex flex-col items-center">
-          <div className="w-16 h-16 bg-red-950/40 text-red-500 rounded-2xl flex items-center justify-center border border-red-900/50 mb-6 shadow-sm">
-             <Users className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-bold mb-2 text-foreground text-center">Room is Full</h2>
-          <p className="text-muted-foreground text-sm mb-8 text-center px-4">
-            This collaborative workspace is limited to 5 active members to ensure peak real-time performance.
+        <main className="z-10 w-full max-w-sm px-6 text-center">
+          <Users className="w-10 h-10 text-destructive mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2 text-foreground">Room is full</h2>
+          <p className="text-muted-foreground text-sm mb-6">
+            This workspace is limited to 5 active participants.
           </p>
-          <a href="/dashboard" className="w-full text-center p-3 rounded-lg bg-primary hover:brightness-110 text-primary-foreground font-bold transition-all shadow-md">
-            Back to Dashboard
+          <a href="/" className="text-sm text-primary hover:underline">
+            Back to home
           </a>
         </main>
       </div>
@@ -392,19 +390,18 @@ function Workspace() {
   if (!username) {
     return (
       <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 60%)" }} />
-        <main className="z-10 w-full max-w-md p-8 bg-card border border-border shadow-xl rounded-2xl flex flex-col items-center">
-          <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center border border-border mb-6 shadow-sm">
-             <Terminal className="w-8 h-8 text-primary" />
+        <main className="z-10 w-full max-w-sm px-6">
+          <div className="text-center mb-6">
+            <Code2 className="w-8 h-8 text-primary mx-auto mb-3" />
+            <h2 className="text-xl font-semibold mb-1 text-foreground">Join workspace</h2>
+            <p className="text-muted-foreground text-xs font-mono truncate">{roomId}</p>
           </div>
-          <h2 className="text-3xl font-bold mb-2 text-foreground text-center">Join Workspace</h2>
-          <p className="text-muted-foreground text-sm mb-8 text-center truncate w-full px-4">Room: {roomId}</p>
-          <form onSubmit={handleJoin} className="flex flex-col gap-4 w-full">
+          <form onSubmit={handleJoin} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-foreground ml-1">Display Name</label>
-              <input type="text" name="username" placeholder="Enter your username" className="p-3 rounded-lg bg-input border border-border focus:border-ring outline-none transition-all text-foreground" autoFocus />
+              <label className="text-sm font-medium text-foreground">Display name</label>
+              <input type="text" name="username" placeholder="Your name" className="p-2.5 rounded-md bg-input border border-border focus:border-primary outline-none transition-all text-foreground text-sm" autoFocus />
             </div>
-            <button className="mt-2 p-3 rounded-lg bg-primary hover:brightness-110 text-primary-foreground font-bold transition-all shadow-md">Enter Room</button>
+            <button className="p-2.5 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors text-sm">Join</button>
           </form>
         </main>
       </div>
@@ -414,82 +411,77 @@ function Workspace() {
   if (username && (!ydoc || !provider)) {
     return (
       <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 60%)" }} />
-        <main className="z-10 flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-muted-foreground text-sm font-semibold tracking-wide">Connecting to room namespace...</p>
+        <main className="z-10 flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-muted-foreground text-sm">Connecting...</p>
         </main>
       </div>
     );
   }
 
-  // --- IDE UI ---
   return (
     <div className="dark h-screen w-full bg-background flex flex-col font-sans overflow-hidden text-foreground">
       
-      {/* Top Header */}
-      <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0 shadow-sm z-10">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-4 border-r border-border pr-6">
+      <header className="h-12 border-b border-border bg-card flex items-center justify-between px-3 shrink-0 z-10">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 border-r border-border pr-4">
             <button 
-              onClick={() => navigate(isLoggedIn ? "/dashboard" : "/")}
+              onClick={() => navigate("/")}
               className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent border-none outline-none cursor-pointer text-foreground"
             >
-              <Terminal className="text-primary w-5 h-5" />
-              <span className="font-bold tracking-wide hidden sm:block">Code<span className="text-primary">V</span></span>
+              <Code2 className="text-primary w-4 h-4" />
+              <span className="font-semibold tracking-tight text-sm hidden sm:block">CoDev</span>
             </button>
             {isLoggedIn && (
               <button
                 onClick={() => navigate("/dashboard")}
-                className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors bg-muted px-2.5 py-1 rounded-md border border-border cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none"
               >
                 Dashboard
               </button>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <select 
-              value={language}
-              onChange={handleLanguageChange}
-              className="bg-input border border-border text-foreground text-sm rounded-md px-3 py-1.5 focus:border-ring outline-none"
-            >
-              <option value="javascript">JavaScript</option>
-              <option value="python">Python</option>
-              <option value="cpp">C++</option>
-              <option value="java">Java</option>
-            </select>
-          </div>
+          <select 
+            value={language}
+            onChange={handleLanguageChange}
+            className="bg-input border border-border text-foreground text-xs rounded-md px-2 py-1 focus:border-primary outline-none"
+          >
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+          </select>
         </div>
         
-        <div className="flex items-center gap-4">
-          <div className="text-xs text-muted-foreground hidden md:flex items-center gap-2 bg-muted px-3 py-1.5 rounded-full">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            Room: <span className="font-mono text-foreground">{roomId}</span>
+        <div className="flex items-center gap-2">
+          <div className="text-xs text-muted-foreground hidden md:flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-chart-2"></span>
+            <span className="font-mono">{roomId.slice(0, 8)}</span>
           </div>
           
           {isLoggedIn && (
             <button
               onClick={handleBookmark}
               disabled={isBookmarked}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-md font-bold text-sm border transition-all
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border transition-colors
                 ${isBookmarked
-                  ? "bg-transparent text-primary border-primary/20 cursor-default"
-                  : "bg-primary hover:brightness-110 text-primary-foreground border-transparent shadow-[0_0_10px_rgba(249,115,22,0.3)]"}`}
+                  ? "text-muted-foreground border-border cursor-default"
+                  : "text-primary border-primary/30 hover:bg-primary/10"}`}
             >
-              ⭐ {isBookmarked ? "Saved" : "Save to Dashboard"}
+              {isBookmarked ? "Saved" : "Save"}
             </button>
           )}
 
           <div className="relative">
             <button
               onClick={handleShareWorkspace}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-md font-bold text-sm border border-border bg-card text-foreground hover:bg-muted transition-colors"
+              className="flex items-center px-2.5 py-1 rounded-md text-xs border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               Share
             </button>
             {showShareTooltip && (
-              <div className="absolute right-0 top-10 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-md select-none animate-in fade-in slide-in-from-top-2 duration-150 shrink-0 whitespace-nowrap">
-                Link Copied!
+              <div className="absolute right-0 top-8 bg-card text-foreground text-[10px] font-medium px-2 py-1 rounded border border-border shadow-sm whitespace-nowrap">
+                Copied!
               </div>
             )}
           </div>
@@ -497,52 +489,48 @@ function Workspace() {
           <button 
             onClick={handleRunCode}
             disabled={isExecuting}
-            className={`flex items-center gap-2 px-5 py-1.5 rounded-md font-bold text-sm transition-all shadow-sm
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-colors
               ${isExecuting 
                 ? "bg-muted text-muted-foreground cursor-not-allowed" 
-                : "bg-green-600 hover:bg-green-500 text-white shadow-[0_0_10px_rgba(22,163,74,0.3)]"}`}
+                : "bg-[#238636] hover:bg-[#2ea043] text-white"}`}
           >
             {isExecuting ? (
-              <span className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full" />
+              <span className="animate-spin w-3 h-3 border-2 border-current border-t-transparent rounded-full" />
             ) : (
-              <Play className="w-4 h-4 fill-current" />
+              <Play className="w-3 h-3 fill-current" />
             )}
-            {isExecuting ? "Running..." : "Run Code"}
+            {isExecuting ? "Running" : "Run"}
           </button>
         </div>
       </header>
 
-      {/* Main Layout */}
       <main className="flex-1 flex overflow-hidden">
         
-        {/* Left Sidebar - Users */}
-        <aside className="w-16 md:w-56 bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 transition-all">
-          <div className="p-4 border-b border-sidebar-border bg-sidebar flex items-center justify-center md:justify-start gap-2">
-            <Users className="w-5 h-5 text-sidebar-primary" />
-            <h2 className="text-sm font-bold text-sidebar-foreground uppercase tracking-wider hidden md:block">Users ({users.length})</h2>
+        <aside className="w-14 md:w-48 bg-sidebar border-r border-sidebar-border flex flex-col shrink-0 transition-all">
+          <div className="px-3 py-2.5 border-b border-sidebar-border flex items-center justify-center md:justify-start gap-2">
+            <Users className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground font-medium hidden md:block">Participants ({users.length})</span>
           </div>
-          <ul className="p-2 md:p-3 flex-1 overflow-y-auto space-y-2">
+          <ul className="p-1.5 md:p-2 flex-1 overflow-y-auto space-y-1">
             {users.map((user, index) => (
-              <li key={index} className="p-2 md:p-2.5 bg-card border border-border rounded-lg flex items-center justify-center md:justify-start gap-3 shadow-sm hover:border-primary/50 transition-colors">
+              <li key={index} className="px-2 py-1.5 rounded-md flex items-center justify-center md:justify-start gap-2.5 hover:bg-sidebar-accent transition-colors">
                 <div 
-                  className="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-inner shrink-0" 
-                  style={{ backgroundColor: user.color || "#f97316" }}
+                  className="w-6 h-6 rounded-full text-[10px] font-semibold flex items-center justify-center shrink-0" 
+                  style={{ backgroundColor: user.color + "30", color: user.color }}
                   title={user.name}
                 >
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-                <span className="font-medium text-sm text-foreground truncate hidden md:block">{user.name}</span>
-                {user.name === username && <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded-sm ml-auto shrink-0 hidden md:block">You</span>}
+                <span className="text-xs text-sidebar-foreground truncate hidden md:block">{user.name}</span>
+                {user.name === username && <span className="text-[9px] text-muted-foreground ml-auto shrink-0 hidden md:block">you</span>}
               </li>
             ))}
           </ul>
         </aside>
 
-        {/* Center - Editor & Terminal */}
         <section className="flex-1 flex flex-col min-w-0">
           
-          {/* Editor Area (Top 70%) */}
-          <div className="flex-[7] bg-[#1e1e1e] relative">
+          <div className="flex-[7] bg-[#0d1117] relative">
             <Editor
               height="100%"
               language={language}
@@ -550,49 +538,48 @@ function Workspace() {
               onMount={handleMount}
               options={{
                 minimap: { enabled: false },
-                fontSize: 16,
-                fontFamily: 'var(--font-mono), monospace',
+                fontSize: 14,
+                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
                 padding: { top: 16, bottom: 16 },
                 scrollBeyondLastLine: false,
                 smoothScrolling: true,
                 cursorBlinking: "smooth",
                 formatOnPaste: true,
+                lineHeight: 22,
+                letterSpacing: 0.3,
               }}
             />
           </div>
 
-          {/* Terminal Area (Bottom 30%) */}
-          <div className="flex-[3] bg-black border-t-2 border-border flex flex-col">
-            <div className="bg-card px-4 py-2 border-b border-border flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider select-none shrink-0">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4" /> Output Terminal
-              </div>
+          <div className="flex-[3] bg-sidebar border-t border-border flex flex-col">
+            <div className="px-3 py-1.5 border-b border-border flex items-center justify-between text-xs text-muted-foreground select-none shrink-0 bg-card">
+              <span className="font-medium">Terminal</span>
               <label className="flex items-center gap-1.5 cursor-pointer hover:text-foreground transition-colors">
                 <input 
                   type="checkbox" 
                   checked={showCustomInput} 
                   onChange={(e) => setShowCustomInput(e.target.checked)}
-                  className="accent-primary w-3 h-3 rounded bg-input border border-border"
+                  className="accent-primary w-3 h-3"
                 />
-                Custom Input
+                <span>Stdin</span>
               </label>
             </div>
             
             <div className="flex-1 flex overflow-hidden">
-              <div className="flex-1 p-4 overflow-y-auto font-mono text-sm text-green-400 whitespace-pre-wrap">
-                {terminalOutput || <span className="text-gray-600 italic">No output yet. Click 'Run Code' to execute.</span>}
+              <div className="flex-1 p-3 overflow-y-auto font-mono text-xs text-chart-2 whitespace-pre-wrap leading-relaxed">
+                {terminalOutput || <span className="text-muted-foreground">No output yet. Click Run to execute.</span>}
               </div>
               
               {showCustomInput && (
-                <div className="w-80 border-l border-border bg-[#121212] flex flex-col shrink-0 animate-in slide-in-from-right-4 duration-300">
-                  <div className="px-4 py-1.5 border-b border-border bg-card text-[10px] font-bold text-muted-foreground uppercase tracking-wider select-none shrink-0">
-                    Input Stdin
+                <div className="w-72 border-l border-border bg-sidebar flex flex-col shrink-0">
+                  <div className="px-3 py-1.5 border-b border-border text-[10px] text-muted-foreground font-medium select-none shrink-0">
+                    Input
                   </div>
                   <textarea 
                     value={customInput}
                     onChange={(e) => setCustomInput(e.target.value)}
-                    placeholder="Enter inputs here (one per line)..."
-                    className="flex-1 p-3 bg-transparent text-sm text-foreground font-mono placeholder:text-gray-600 resize-none outline-none border-none"
+                    placeholder="Enter input..."
+                    className="flex-1 p-2.5 bg-transparent text-xs text-foreground font-mono placeholder:text-muted-foreground/50 resize-none outline-none border-none"
                   />
                 </div>
               )}
@@ -600,24 +587,22 @@ function Workspace() {
           </div>
         </section>
 
-        {/* Right Sidebar - Chat */}
-        <aside className="w-72 bg-sidebar border-l border-sidebar-border flex flex-col shrink-0 hidden lg:flex">
-          <div className="p-4 border-b border-sidebar-border bg-sidebar flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-sidebar-primary" />
-            <h2 className="text-sm font-bold text-sidebar-foreground uppercase tracking-wider">Room Chat</h2>
+        <aside className="w-64 bg-sidebar border-l border-sidebar-border flex flex-col shrink-0 hidden lg:flex">
+          <div className="px-3 py-2.5 border-b border-sidebar-border flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground font-medium">Chat</span>
           </div>
           
-          {/* Chat Messages */}
-          <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
+          <div className="flex-1 px-3 py-3 overflow-y-auto flex flex-col gap-2.5">
             {chatMessages.length === 0 ? (
-              <p className="text-center text-muted-foreground text-xs italic mt-10">Start the conversation...</p>
+              <p className="text-center text-muted-foreground text-xs mt-10">No messages yet</p>
             ) : (
               chatMessages.map((msg, idx) => {
                 const isMe = msg.sender === username;
                 return (
                   <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                    <span className="text-[10px] text-muted-foreground mb-1 ml-1">{msg.sender} • {msg.time}</span>
-                    <div className={`px-3 py-2 rounded-xl text-sm max-w-[85%] break-words ${isMe ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card border border-border text-foreground rounded-bl-none'}`}>
+                    <span className="text-[10px] text-muted-foreground mb-0.5">{msg.sender} · {msg.time}</span>
+                    <div className={`px-2.5 py-1.5 rounded-md text-xs max-w-[85%] break-words ${isMe ? 'bg-primary/15 text-foreground' : 'bg-card border border-border text-foreground'}`}>
                       {msg.text}
                     </div>
                   </div>
@@ -626,18 +611,17 @@ function Workspace() {
             )}
           </div>
 
-          {/* Chat Input */}
-          <div className="p-4 bg-card border-t border-sidebar-border">
-            <form onSubmit={handleSendMessage} className="flex gap-2">
+          <div className="p-2.5 border-t border-sidebar-border">
+            <form onSubmit={handleSendMessage} className="flex gap-1.5">
               <input 
                 type="text" 
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Type a message..." 
-                className="flex-1 bg-input border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:border-ring outline-none"
+                placeholder="Message..." 
+                className="flex-1 bg-input border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none"
               />
-              <button type="submit" disabled={!chatInput.trim()} className="p-2 bg-primary hover:brightness-110 text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all">
-                <Send className="w-4 h-4" />
+              <button type="submit" disabled={!chatInput.trim()} className="p-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                <Send className="w-3.5 h-3.5" />
               </button>
             </form>
           </div>
