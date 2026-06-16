@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { MessageSquare, Send, X } from "lucide-react";
 
 export default function ChatPanel({
@@ -10,6 +11,24 @@ export default function ChatPanel({
   handleSendMessage,
   chatEndRef
 }) {
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
+  }, [chatInput]);
+
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (chatInput.trim()) {
+        handleSendMessage(e);
+      }
+    }
+  };
+
   return (
     <>
       {/* Mobile Overlay Background */}
@@ -40,11 +59,24 @@ export default function ChatPanel({
             <p className="text-center text-muted-foreground text-xs mt-10">No messages yet</p>
           ) : (
             chatMessages.map((msg, idx) => {
+              if (msg.type === "system") {
+                return (
+                  <div key={idx} className="flex justify-center my-1">
+                    <span className="text-[10px] text-muted-foreground/70 italic bg-card/50 px-2 py-0.5 rounded-full">
+                      {msg.text}
+                    </span>
+                  </div>
+                );
+              }
+
               const isMe = msg.sender === username;
+              const prevMsg = chatMessages[idx - 1];
+              const showHeader = !prevMsg || prevMsg.type === "system" || prevMsg.sender !== msg.sender || prevMsg.time !== msg.time;
+
               return (
-                <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                  <span className="text-[10px] text-muted-foreground mb-0.5">{msg.sender} · {msg.time}</span>
-                  <div className={`px-2.5 py-1.5 rounded-md text-xs max-w-[85%] break-words ${isMe ? 'bg-primary/15 text-foreground' : 'bg-card border border-border text-foreground'}`}>
+                <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} ${!showHeader ? 'mt-0' : 'mt-1'}`}>
+                  {showHeader && <span className="text-[10px] text-muted-foreground mb-0.5">{msg.sender} · {msg.time}</span>}
+                  <div className={`px-2.5 py-1.5 rounded-md text-xs max-w-[85%] break-words whitespace-pre-wrap ${isMe ? 'bg-primary/15 text-foreground' : 'bg-card border border-border text-foreground'}`}>
                     {msg.text}
                   </div>
                 </div>
@@ -55,15 +87,17 @@ export default function ChatPanel({
         </div>
 
         <div className="p-2.5 border-t border-sidebar-border bg-sidebar">
-          <form onSubmit={handleSendMessage} className="flex gap-1.5">
-            <input 
-              type="text" 
+          <form onSubmit={handleSendMessage} className="flex gap-1.5 items-end">
+            <textarea 
+              ref={textareaRef}
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Message..." 
-              className="flex-1 bg-input border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none"
+              onKeyDown={onKeyDown}
+              placeholder="Message... (Shift+Enter for new line)" 
+              className="flex-1 bg-input border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none resize-none overflow-hidden min-h-[32px]"
+              rows={1}
             />
-            <button type="submit" disabled={!chatInput.trim()} className="p-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+            <button type="submit" disabled={!chatInput.trim()} className="p-1.5 mb-0.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0">
               <Send className="w-3.5 h-3.5" />
             </button>
           </form>

@@ -56,6 +56,8 @@ function Workspace() {
   const [showShareTooltip, setShowShareTooltip] = useState(false);
   const [isRoomFull, setIsRoomFull] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [systemMessages, setSystemMessages] = useState([]);
+  const previousUsersRef = useRef(new Set());
 
   // Advanced Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -84,6 +86,12 @@ function Workspace() {
       terminalEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [terminalOutput]);
+
+  useEffect(() => {
+    if (isChatOpen && chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, isChatOpen]);
 
   const yText = useMemo(() => ydoc ? ydoc.getText("monaco") : null, [ydoc]);
   const ySettings = useMemo(() => ydoc ? ydoc.getMap("settings") : null, [ydoc]);
@@ -223,9 +231,11 @@ function Workspace() {
       
       const seen = new Set();
       const activeUsers = [];
+      const currentNames = new Set();
       sortedStates.forEach(([clientId, state], index) => {
         if (!seen.has(state.user.name)) {
           seen.add(state.user.name);
+          currentNames.add(state.user.name);
           const color = colors[index % colors.length];
           activeUsers.push({
             name: state.user.name,
@@ -234,6 +244,28 @@ function Workspace() {
         }
       });
       setUsers(activeUsers);
+
+      const newSysMsgs = [];
+      const now = Date.now();
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      currentNames.forEach(name => {
+        if (!previousUsersRef.current.has(name) && name !== username && previousUsersRef.current.size > 0) {
+          newSysMsgs.push({ type: "system", text: `${name} joined the room`, time: timeStr, timestamp: now });
+        }
+      });
+
+      previousUsersRef.current.forEach(name => {
+        if (!currentNames.has(name) && name !== username) {
+          newSysMsgs.push({ type: "system", text: `${name} left the room`, time: timeStr, timestamp: now });
+        }
+      });
+
+      if (newSysMsgs.length > 0) {
+        setSystemMessages(prev => [...prev, ...newSysMsgs]);
+      }
+
+      previousUsersRef.current = currentNames;
 
       sortedStates.forEach(([clientId, state], index) => {
         const color = colors[index % colors.length];
@@ -302,7 +334,10 @@ function Workspace() {
     updateTerminal();
 
     const updateChat = (event) => {
-      const messages = yChat.toArray();
+      const messages = yChat.toArray().map((msg, idx) => ({
+        ...msg,
+        timestamp: msg.timestamp || idx
+      }));
       setChatMessages(messages);
       
       // If triggered by a remote change (event exists) and chat is closed
@@ -417,11 +452,16 @@ function Workspace() {
     yChat.push([{
       sender: username,
       text: chatInput,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: Date.now()
     }]);
     
     setChatInput("");
   };
+
+  const combinedChatMessages = useMemo(() => {
+    return [...chatMessages, ...systemMessages].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  }, [chatMessages, systemMessages]);
 
   if (isRoomFull) {
     return (
@@ -471,6 +511,7 @@ function Workspace() {
       </div>
     );
   }
+
 
   return (
     <div className="dark h-screen w-full bg-background flex flex-col font-sans overflow-hidden text-foreground">
@@ -536,7 +577,7 @@ function Workspace() {
         <ChatPanel
           isChatOpen={isChatOpen}
           toggleChat={toggleChat}
-          chatMessages={chatMessages}
+          chatMessages={combinedChatMessages}
           username={username}
           chatInput={chatInput}
           setChatInput={setChatInput}
