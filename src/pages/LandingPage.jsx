@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
@@ -9,17 +8,11 @@ import FeaturesSection from "../components/landing/FeaturesSection";
 import HowItWorks from "../components/landing/HowItWorks";
 import CTASection from "../components/landing/CTASection";
 import Footer from "../components/landing/Footer";
+import { useAuth } from "../hooks/useAuth";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const { isLoggedIn, token } = useAuth();
 
   const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
@@ -27,7 +20,6 @@ function LandingPage() {
 
   const handleCreateRoom = async () => {
     const newRoomId = uuidv4();
-    const token = localStorage.getItem("token");
     if (token) {
       try {
         await fetch(`${SERVER_URL}/api/workspaces`, {

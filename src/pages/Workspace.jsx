@@ -10,6 +10,7 @@ import WorkspaceHeader from "../components/workspace/WorkspaceHeader";
 import ParticipantList from "../components/workspace/ParticipantList";
 import TerminalPanel from "../components/workspace/TerminalPanel";
 import ChatPanel from "../components/workspace/ChatPanel";
+import { useAuth } from "../hooks/useAuth";
 
 const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
   ? "http://localhost:3000"
@@ -32,22 +33,12 @@ function Workspace() {
   const terminalEndRef = useRef(null);
   const chatEndRef = useRef(null);
 
+  const { token, user, isLoggedIn: authIsLoggedIn, handleAuthError } = useAuth();
+
   const [username, setUsername] = useState(() => {
     const urlName = new URLSearchParams(window.location.search).get("username");
     if (urlName) return urlName;
-
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        if (parsed && parsed.username) {
-          return parsed.username;
-        }
-      } catch (err) {
-        // Fallback
-      }
-    }
-    return "";
+    return user ? user.username : "";
   });
 
   const [users, setUsers] = useState([]);
@@ -100,7 +91,6 @@ function Workspace() {
   const yChat = useMemo(() => ydoc ? ydoc.getArray("chat") : null, [ydoc]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
       const checkBookmark = async () => {
@@ -114,9 +104,7 @@ function Workspace() {
             const data = await response.json();
             setIsBookmarked(data.bookmarked);
           } else if (response.status === 401 || response.status === 400) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            navigate("/login?expired=true");
+            handleAuthError();
           }
         } catch (err) {
           console.error(err);
@@ -124,10 +112,9 @@ function Workspace() {
       };
       checkBookmark();
     }
-  }, [roomId]);
+  }, [roomId, token]);
 
   const handleBookmark = async () => {
-    const token = localStorage.getItem("token");
     if (!token) return;
     try {
       const response = await fetch(`${SERVER_URL}/api/workspaces`, {
@@ -144,9 +131,7 @@ function Workspace() {
       if (response.ok) {
         setIsBookmarked(true);
       } else if (response.status === 401 || response.status === 400) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login?expired=true");
+        handleAuthError();
       }
     } catch (err) {
       console.error(err);

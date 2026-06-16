@@ -6,38 +6,18 @@ import { v4 as uuidv4 } from "uuid";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import WorkspaceCard from "../components/dashboard/WorkspaceCard";
 import CreateWorkspaceModal from "../components/dashboard/CreateWorkspaceModal";
+import { useAuth } from "../hooks/useAuth";
 
 function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("workspaces");
-  const [user, setUser] = useState(null);
-  
-  const [workspaces, setWorkspaces] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newWorkspaceName, setNewWorkspaceName] = useState("");
-  const [copiedId, setCopiedId] = useState(null);
-  const [editingRoomId, setEditingRoomId] = useState(null);
-  const [editWorkspaceName, setEditWorkspaceName] = useState("");
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (!token || !storedUser) {
-      navigate("/login");
-      return;
-    }
-
-    setUser(JSON.parse(storedUser));
-  }, [navigate]);
+  const { token, user, logout, handleAuthError } = useAuth({ requireAuth: true });
 
   useEffect(() => {
     if (!user) return;
 
     const fetchWorkspaces = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:3000/api/workspaces", {
           headers: {
             "Authorization": `Bearer ${token}`
@@ -47,9 +27,7 @@ function Dashboard() {
           const data = await response.json();
           setWorkspaces(data);
         } else if (response.status === 401 || response.status === 400) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          navigate("/login?expired=true");
+          handleAuthError();
         }
       } catch (err) {
         console.error(err);
@@ -65,7 +43,6 @@ function Dashboard() {
     e.preventDefault();
     if (!newWorkspaceName.trim()) return;
 
-    const token = localStorage.getItem("token");
     const newRoomId = uuidv4();
 
     try {
@@ -84,9 +61,7 @@ function Dashboard() {
       if (response.ok) {
         navigate(`/${newRoomId}`);
       } else if (response.status === 401 || response.status === 400) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login?expired=true");
+        handleAuthError();
       }
     } catch (err) {
       console.error(err);
@@ -94,7 +69,6 @@ function Dashboard() {
   };
 
   const handleDelete = async (roomId) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
         method: "DELETE",
@@ -106,9 +80,7 @@ function Dashboard() {
       if (response.ok) {
         setWorkspaces(prev => prev.filter(w => w.roomId !== roomId));
       } else if (response.status === 401 || response.status === 400) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login?expired=true");
+        handleAuthError();
       }
     } catch (err) {
       console.error(err);
@@ -128,7 +100,6 @@ function Dashboard() {
       return;
     }
 
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
         method: "PUT",
@@ -142,9 +113,7 @@ function Dashboard() {
       if (response.ok) {
         setWorkspaces(prev => prev.map(w => w.roomId === roomId ? { ...w, name: editWorkspaceName.trim() } : w));
       } else if (response.status === 401 || response.status === 400) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login?expired=true");
+        handleAuthError();
       }
     } catch (err) {
       console.error(err);
@@ -154,9 +123,7 @@ function Dashboard() {
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/");
+    logout();
   };
 
   if (!user) {
