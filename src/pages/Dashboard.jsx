@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Code2, Folder, Settings, Clock, LogOut, Plus, Trash2, Copy, Play, Check, ArrowLeft } from "lucide-react";
+import { Code2, Folder, Settings, Clock, LogOut, Plus, Trash2, Copy, Play, Check, ArrowLeft, Edit2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
 function Dashboard() {
@@ -13,6 +13,8 @@ function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newWorkspaceName, setNewWorkspaceName] = useState("");
   const [copiedId, setCopiedId] = useState(null);
+  const [editingRoomId, setEditingRoomId] = useState(null);
+  const [editWorkspaceName, setEditWorkspaceName] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -114,6 +116,37 @@ function Dashboard() {
     navigator.clipboard.writeText(link);
     setCopiedId(roomId);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleRenameWorkspace = async (roomId) => {
+    if (!editWorkspaceName.trim()) {
+      setEditingRoomId(null);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: editWorkspaceName.trim() })
+      });
+
+      if (response.ok) {
+        setWorkspaces(prev => prev.map(w => w.roomId === roomId ? { ...w, name: editWorkspaceName.trim() } : w));
+      } else if (response.status === 401 || response.status === 400) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login?expired=true");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setEditingRoomId(null);
+    }
   };
 
   const handleSignOut = () => {
@@ -257,7 +290,34 @@ function Dashboard() {
                         <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center border border-primary/20">
                           <Code2 className="w-4 h-4 text-primary" />
                         </div>
-                        <h3 className="font-medium text-foreground text-sm truncate flex-1">{workspace.name}</h3>
+                        {editingRoomId === workspace.roomId ? (
+                          <input
+                            type="text"
+                            value={editWorkspaceName}
+                            onChange={(e) => setEditWorkspaceName(e.target.value)}
+                            onBlur={() => handleRenameWorkspace(workspace.roomId)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleRenameWorkspace(workspace.roomId);
+                              if (e.key === "Escape") setEditingRoomId(null);
+                            }}
+                            autoFocus
+                            className="flex-1 bg-input border border-border text-foreground text-sm rounded-md px-2 py-0.5 focus:border-primary outline-none min-w-0"
+                          />
+                        ) : (
+                          <div className="flex-1 flex items-center gap-2 overflow-hidden">
+                            <h3 className="font-medium text-foreground text-sm truncate">{workspace.name}</h3>
+                            <button
+                              onClick={() => {
+                                setEditingRoomId(workspace.roomId);
+                                setEditWorkspaceName(workspace.name);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted text-muted-foreground rounded transition-all"
+                              title="Rename workspace"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                       
                       <p className="text-[11px] text-muted-foreground font-mono truncate mb-3 select-all bg-muted px-2 py-1 rounded w-fit max-w-full">
