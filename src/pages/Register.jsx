@@ -19,6 +19,7 @@ function Register() {
     try {
       const response = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -31,7 +32,6 @@ function Register() {
         throw new Error(data.error || "Registration failed");
       }
 
-      localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/dashboard");
     } catch (err) {

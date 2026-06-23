@@ -5,7 +5,6 @@ export function useAuth(options = {}) {
   const { requireAuth = false } = options;
   const navigate = useNavigate();
   
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     try {
@@ -14,34 +13,42 @@ export function useAuth(options = {}) {
       return null;
     }
   });
-  const [isLoggedIn, setIsLoggedIn] = useState(!!token && !!user);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!user);
 
   useEffect(() => {
-    const currentToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (requireAuth && (!currentToken || !storedUser)) {
+    if (requireAuth && !storedUser) {
       navigate("/login");
     }
   }, [navigate, requireAuth]);
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = async () => {
+    try {
+      const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:3000"
+        : `http://${window.location.hostname}:3000`;
+      
+      await fetch(`${SERVER_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'omit' // We are clearing the cookie on backend anyway
+      });
+    } catch (e) {
+      console.error('Logout failed', e);
+    }
+
     localStorage.removeItem("user");
-    setToken(null);
     setUser(null);
     setIsLoggedIn(false);
     navigate("/");
   };
 
   const handleAuthError = () => {
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setToken(null);
     setUser(null);
     setIsLoggedIn(false);
     navigate("/login?expired=true");
   };
 
-  return { token, user, isLoggedIn, logout, handleAuthError };
+  return { user, isLoggedIn, logout, handleAuthError };
 }

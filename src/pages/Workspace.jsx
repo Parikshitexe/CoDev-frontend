@@ -33,7 +33,7 @@ function Workspace() {
   const terminalEndRef = useRef(null);
   const chatEndRef = useRef(null);
 
-  const { token, user, isLoggedIn: authIsLoggedIn, handleAuthError } = useAuth();
+  const { user, isLoggedIn: authIsLoggedIn, handleAuthError } = useAuth();
 
   const [username, setUsername] = useState(() => {
     const urlName = new URLSearchParams(window.location.search).get("username");
@@ -99,14 +99,12 @@ function Workspace() {
   const yChat = useMemo(() => ydoc ? ydoc.getArray("chat") : null, [ydoc]);
 
   useEffect(() => {
-    if (token) {
+    if (authIsLoggedIn) {
       setIsLoggedIn(true);
       const checkBookmark = async () => {
         try {
           const response = await fetch(`${SERVER_URL}/api/workspaces/${roomId}/status`, {
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
+            credentials: 'include'
           });
           if (response.ok) {
             const data = await response.json();
@@ -120,16 +118,16 @@ function Workspace() {
       };
       checkBookmark();
     }
-  }, [roomId, token]);
+  }, [roomId, authIsLoggedIn]);
 
   const handleBookmark = async () => {
-    if (!token) return;
+    if (!authIsLoggedIn) return;
     try {
       const response = await fetch(`${SERVER_URL}/api/workspaces`, {
         method: "POST",
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           roomId,
@@ -407,6 +405,7 @@ function Workspace() {
     try {
       const response = await fetch(`${SERVER_URL}/api/execute`, {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json"
         },

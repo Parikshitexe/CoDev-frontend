@@ -11,7 +11,7 @@ import { useAuth } from "../hooks/useAuth";
 function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("workspaces");
-  const { token, user, logout, handleAuthError } = useAuth({ requireAuth: true });
+  const { user, logout, handleAuthError } = useAuth({ requireAuth: true });
 
   useEffect(() => {
     if (!user) return;
@@ -19,9 +19,7 @@ function Dashboard() {
     const fetchWorkspaces = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/workspaces", {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
+          credentials: 'include'
         });
         if (response.ok) {
           const data = await response.json();
@@ -48,9 +46,9 @@ function Dashboard() {
     try {
       const response = await fetch("http://localhost:3000/api/workspaces", {
         method: "POST",
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           roomId: newRoomId,
@@ -72,9 +70,7 @@ function Dashboard() {
     try {
       const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -103,9 +99,9 @@ function Dashboard() {
     try {
       const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
         method: "PUT",
+        credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ name: editWorkspaceName.trim() })
       });

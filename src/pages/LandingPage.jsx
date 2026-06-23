@@ -12,7 +12,7 @@ import { useAuth } from "../hooks/useAuth";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const { isLoggedIn, token } = useAuth();
+  const { isLoggedIn } = useAuth();
 
   const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
@@ -20,13 +20,13 @@ function LandingPage() {
 
   const handleCreateRoom = async () => {
     const newRoomId = uuidv4();
-    if (token) {
+    if (isLoggedIn) {
       try {
         await fetch(`${SERVER_URL}/api/workspaces`, {
           method: "POST",
+          credentials: 'include',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
             roomId: newRoomId,
