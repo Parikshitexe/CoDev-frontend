@@ -1,4 +1,4 @@
-import { Code2, Play, MessageSquare, Share2, BookmarkPlus } from "lucide-react";
+import { Code2, Play, MessageSquare, Share2, BookmarkPlus, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
 
 export default function WorkspaceHeader({
   roomId,
+  roomName,
   connectionStatus,
   isLoggedIn,
   language,
@@ -28,27 +29,36 @@ export default function WorkspaceHeader({
   const navigate = useNavigate();
 
   return (
-    <header className="h-14 glass-header flex items-center justify-between px-4 shrink-0 z-10">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3 border-r border-border pr-4">
+    <header className="h-12 glass-header flex items-center justify-between px-4 shrink-0 z-10">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 border-r border-[#1a1a1a] pr-4">
           <Button 
             variant="ghost"
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent px-2"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent px-2 h-8"
           >
-            <Code2 className="text-primary w-5 h-5" />
-            <span className="font-semibold tracking-tight text-sm hidden sm:block">CoDev</span>
+            <div className="w-5 h-5 rounded-[3px] bg-white flex items-center justify-center">
+              <Code2 className="w-3 h-3 text-black" strokeWidth={2.5} />
+            </div>
+            <span className="font-semibold tracking-tight text-sm hidden sm:block text-white">CoDev</span>
           </Button>
           {isLoggedIn && (
             <Button
               variant="link"
               onClick={() => navigate("/dashboard")}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2"
+              className="text-xs text-[#555] hover:text-[#737373] transition-colors px-2 h-8"
             >
               Dashboard
             </Button>
           )}
         </div>
+        {/* Breadcrumb: CoDev / workspace-name */}
+        {roomName && (
+          <div className="hidden md:flex items-center gap-1.5 text-xs text-[#737373]">
+            <ChevronRight className="w-3 h-3 text-[#333]" />
+            <span className="font-medium text-[#555] truncate max-w-[160px]">{roomName}</span>
+          </div>
+        )}
         <Select value={language} onValueChange={(val) => handleLanguageChange({ target: { value: val } })}>
           <SelectTrigger className="w-[120px] h-8 text-xs font-medium bg-input/50 backdrop-blur-sm border-border/50 hover:bg-input transition-colors">
             <SelectValue placeholder="Language" />

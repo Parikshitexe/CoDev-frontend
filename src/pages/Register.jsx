@@ -1,9 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Code2 } from "lucide-react";
+import { Code2, Zap, Shield, BookMarked } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+const PERKS = [
+  { icon: BookMarked, text: "Persistent workspaces — your code never disappears" },
+  { icon: Zap, text: "Real-time collaboration with up to 5 participants" },
+  { icon: Shield, text: "Secure, private sessions with unique room IDs" },
+];
 
 function Register() {
   const navigate = useNavigate();
@@ -23,17 +28,12 @@ function Register() {
       const response = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password })
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
-      }
+      if (!response.ok) throw new Error(data.error || "Registration failed");
 
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/dashboard");
@@ -45,94 +45,126 @@ function Register() {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="dark min-h-screen w-full auth-mesh-bg relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground"
-    >
+    <div className="dark min-h-screen w-full flex font-sans overflow-hidden text-foreground bg-black">
 
-      <nav className="absolute top-0 w-full max-w-5xl mx-auto flex items-center justify-between px-6 py-5 z-10">
-        <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity text-foreground">
-          <Code2 className="text-primary w-6 h-6" />
-          <span className="text-lg font-semibold tracking-tight">CoDev</span>
+      {/* Left: Brand panel */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="hidden lg:flex w-[420px] shrink-0 flex-col justify-between p-10 border-r border-[#1a1a1a] bg-[#050505] dot-grid-bg"
+      >
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[5px] bg-white flex items-center justify-center">
+            <Code2 className="w-4 h-4 text-black" strokeWidth={2.5} />
+          </div>
+          <span className="text-base font-semibold text-white tracking-tight">CoDev</span>
         </Link>
-      </nav>
 
-      <main className="z-10 w-full max-w-sm px-6">
-        <div className="mb-8 text-center">
-          <h2 className="text-2xl font-semibold mb-2 text-foreground">Create an account</h2>
-          <p className="text-muted-foreground text-sm">Get started with collaborative coding</p>
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight mb-2">
+            Start for free.
+          </h2>
+          <p className="text-sm text-[#737373] mb-8">
+            Create your account and get persistent workspaces, saved sessions, and real-time collaboration.
+          </p>
+          <div className="space-y-4">
+            {PERKS.map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-start gap-3">
+                <div className="w-7 h-7 rounded-md border border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon className="w-3.5 h-3.5 text-[#737373]" />
+                </div>
+                <p className="text-xs text-[#737373] leading-relaxed">{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {error && (
-          <div className="w-full p-3 mb-4 text-sm bg-destructive/10 border border-destructive/20 text-destructive rounded-md text-center">
-            {error}
-          </div>
-        )}
+        <p className="text-[11px] text-[#555] font-mono">
+          © {new Date().getFullYear()} CoDev · Free forever for individuals
+        </p>
+      </motion.div>
 
-        <form onSubmit={handleRegister} className="flex flex-col gap-4 w-full">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-foreground">Username</label>
-            <Input
-              type="text"
-              name="username"
-              required
-              placeholder="your-username"
-            />
+      {/* Right: Form */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="flex-1 flex flex-col items-center justify-center px-6 bg-black"
+      >
+        {/* Mobile logo */}
+        <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
+          <div className="w-6 h-6 rounded-[4px] bg-white flex items-center justify-center">
+            <Code2 className="w-3.5 h-3.5 text-black" strokeWidth={2.5} />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-foreground">Email</label>
-            <Input
-              type="email"
-              name="email"
-              required
-              placeholder="you@example.com"
-            />
+          <span className="text-sm font-semibold text-white">CoDev</span>
+        </Link>
+
+        <div className="w-full max-w-sm">
+          <div className="mb-8">
+            <h1 className="text-xl font-semibold text-white mb-1 tracking-tight">Create your account</h1>
+            <p className="text-sm text-[#737373]">Free forever. No credit card required.</p>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-foreground">Password</label>
-            <Input
-              type="password"
-              name="password"
-              required
-              placeholder="Min. 6 characters"
-            />
-          </div>
-          
-          <p className="text-xs text-muted-foreground">
-            By signing up, you agree to our Terms of Service and Privacy Policy.
+
+          {error && (
+            <div className="w-full p-3 mb-5 text-xs bg-[#f78166]/5 border border-[#f78166]/20 text-[#f78166] rounded-md text-center">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleRegister} className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-[#737373]">Username</label>
+              <Input
+                type="text"
+                name="username"
+                required
+                placeholder="johndoe"
+                className="bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-[#555] focus:border-[#333] h-9 text-sm"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-[#737373]">Email</label>
+              <Input
+                type="email"
+                name="email"
+                required
+                placeholder="you@example.com"
+                className="bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-[#555] focus:border-[#333] h-9 text-sm"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-[#737373]">Password</label>
+              <Input
+                type="password"
+                name="password"
+                required
+                placeholder="••••••••"
+                className="bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-[#555] focus:border-[#333] h-9 text-sm"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full py-2.5 mt-1 disabled:opacity-50"
+            >
+              {loading ? "Creating account..." : "Create free account"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-xs text-[#555] text-center">
+            Already have an account?{' '}
+            <Link to="/login" className="text-white hover:text-[#ededed] transition-colors">
+              Sign in
+            </Link>
           </p>
 
-          <Button 
-            type="submit"
-            disabled={loading}
-            className="w-full"
-          >
-            {loading ? "Creating account..." : "Create account"}
-          </Button>
-        </form>
-
-        <div className="flex items-center w-full my-6">
-          <div className="flex-1 border-t border-border"></div>
-          <span className="px-3 text-xs text-muted-foreground">or</span>
-          <div className="flex-1 border-t border-border"></div>
+          <p className="mt-4 text-[11px] text-[#444] text-center leading-relaxed">
+            By creating an account you agree to our terms of service and privacy policy.
+          </p>
         </div>
-
-        <Button variant="outline" className="w-full">
-          <svg viewBox="0 0 24 24" className="w-4 h-4 mr-2 text-foreground" fill="currentColor">
-            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-          </svg>
-          Sign up with GitHub
-        </Button>
-
-        <p className="mt-8 text-sm text-muted-foreground text-center">
-          Already have an account?{' '}
-          <Link to="/login" className="text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </main>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 

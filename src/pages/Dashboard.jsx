@@ -183,7 +183,7 @@ function Dashboard() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="dark min-h-screen w-full auth-mesh-bg flex font-sans text-foreground overflow-hidden"
+      className="dark min-h-screen w-full bg-black flex font-sans text-foreground overflow-hidden"
     >
       
       <DashboardSidebar 

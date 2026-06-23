@@ -1,79 +1,85 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Code2, Folder, Settings, Clock, LogOut, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+const NAV_ITEMS = [
+  { id: "workspaces", label: "Workspaces", icon: Folder },
+  { id: "recent", label: "Recent", icon: Clock },
+  { id: "settings", label: "Settings", icon: Settings },
+];
 
 export default function DashboardSidebar({ user, activeTab, setActiveTab, handleSignOut }) {
   const navigate = useNavigate();
 
   return (
-    <aside className="w-60 bg-sidebar/50 backdrop-blur-md border-r border-sidebar-border flex flex-col shrink-0">
-      
-      <div className="px-5 py-4 border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-sidebar-foreground">
-          <Code2 className="text-primary w-5 h-5" />
-          <span className="font-semibold tracking-tight text-sm">CoDev</span>
+    <aside className="w-56 bg-[#050505] border-r border-[#1a1a1a] flex flex-col shrink-0">
+
+      {/* Logo */}
+      <div className="px-4 py-4 border-b border-[#1a1a1a]">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-6 h-6 rounded-[4px] bg-white flex items-center justify-center">
+            <Code2 className="w-3.5 h-3.5 text-black" strokeWidth={2.5} />
+          </div>
+          <span className="text-sm font-semibold text-white tracking-tight">CoDev</span>
         </Link>
       </div>
 
-      <div className="px-5 py-4 border-b border-sidebar-border flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-semibold shrink-0">
+      {/* User info */}
+      <div className="px-4 py-3.5 border-b border-[#1a1a1a] flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-full border border-[#1a1a1a] bg-[#0a0a0a] flex items-center justify-center text-xs font-semibold text-[#737373] shrink-0">
           {user.username.charAt(0).toUpperCase()}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-sidebar-foreground truncate">{user.username}</p>
-          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+          <p className="text-xs font-medium text-white truncate">{user.username}</p>
+          <p className="text-[10px] text-[#555] truncate">{user.email}</p>
         </div>
       </div>
 
-      <nav className="flex-1 px-3 py-3 space-y-1">
-        <Button 
-          variant="ghost"
+      {/* Back to home */}
+      <div className="px-2 pt-3">
+        <button
           onClick={() => navigate("/")}
-          className="w-full justify-start text-muted-foreground hover:text-sidebar-foreground"
+          className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[#555] hover:text-[#737373] hover:bg-[#0a0a0a] transition-colors text-xs font-medium"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           Back to home
-        </Button>
+        </button>
+        <div className="h-px bg-[#1a1a1a] my-2" />
+      </div>
 
-        <div className="h-px bg-sidebar-border my-2" />
-
-        <Button 
-          variant={activeTab === "workspaces" ? "secondary" : "ghost"}
-          onClick={() => setActiveTab("workspaces")}
-          className={`w-full justify-start ${activeTab !== "workspaces" ? "text-muted-foreground" : ""}`}
-        >
-          <Folder className="w-4 h-4 mr-2" />
-          Workspaces
-        </Button>
-        
-        <Button 
-          variant={activeTab === "recent" ? "secondary" : "ghost"}
-          onClick={() => setActiveTab("recent")}
-          className={`w-full justify-start ${activeTab !== "recent" ? "text-muted-foreground" : ""}`}
-        >
-          <Clock className="w-4 h-4 mr-2" />
-          Recent
-        </Button>
-
-        <Button 
-          variant={activeTab === "settings" ? "secondary" : "ghost"}
-          onClick={() => setActiveTab("settings")}
-          className={`w-full justify-start ${activeTab !== "settings" ? "text-muted-foreground" : ""}`}
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Settings
-        </Button>
+      {/* Nav items */}
+      <nav className="flex-1 px-2 space-y-0.5">
+        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+          const isActive = activeTab === id;
+          return (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`relative w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${
+                isActive
+                  ? "text-white bg-[#0a0a0a] border border-[#1a1a1a]"
+                  : "text-[#555] hover:text-[#737373] hover:bg-[#0a0a0a]"
+              }`}
+            >
+              {/* VS Code-style active left border */}
+              {isActive && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-white rounded-r-full" />
+              )}
+              <Icon className="w-3.5 h-3.5 shrink-0" />
+              {label}
+            </button>
+          );
+        })}
       </nav>
 
-      <div className="px-3 py-3 border-t border-sidebar-border">
-        <Button 
-          variant="ghost"
+      {/* Sign out */}
+      <div className="px-2 py-3 border-t border-[#1a1a1a]">
+        <button
           onClick={handleSignOut}
-          className="w-full justify-start text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-[#555] hover:text-[#f78166] hover:bg-[#f78166]/5 transition-colors text-xs font-medium"
         >
-          <LogOut className="w-4 h-4 mr-2" />
+          <LogOut className="w-3.5 h-3.5" />
           Sign out
-        </Button>
+        </button>
       </div>
     </aside>
   );

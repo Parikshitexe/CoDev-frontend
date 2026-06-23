@@ -26,13 +26,8 @@ function LandingPage() {
         await fetch(`${SERVER_URL}/api/workspaces`, {
           method: "POST",
           credentials: 'include',
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            roomId: newRoomId,
-            name: "Quick Room"
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId: newRoomId, name: "Quick Room" })
         });
       } catch (err) {
         console.error(err);
@@ -42,47 +37,24 @@ function LandingPage() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="dark min-h-screen w-full bg-background relative flex flex-col font-sans overflow-x-hidden text-foreground"
+      className="dark min-h-screen w-full dot-grid-bg relative flex flex-col font-sans overflow-x-hidden text-foreground"
     >
-      
-      {/* Background Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none" style={{
-        backgroundImage: "radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0)",
-        backgroundSize: "40px 40px",
-        opacity: 0.3,
-      }} />
-      
-      {/* Gradient Orb */}
-      <div className="fixed top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full pointer-events-none z-0"
-        style={{
-          background: "radial-gradient(ellipse, rgba(129,140,248,0.12) 0%, transparent 70%)",
-          animation: "pulse-glow 6s ease-in-out infinite",
-        }}
+      {/* Subtle white radial glow at top */}
+      <div
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full pointer-events-none z-0"
+        style={{ background: "radial-gradient(ellipse, rgba(255,255,255,0.025) 0%, transparent 70%)" }}
       />
 
       <Navbar isLoggedIn={isLoggedIn} />
-      
-      <HeroSection 
-        isLoggedIn={isLoggedIn} 
-        handleCreateRoom={handleCreateRoom} 
-      />
-      
+      <HeroSection isLoggedIn={isLoggedIn} handleCreateRoom={handleCreateRoom} />
       <EditorPreview />
-      
       <FeaturesSection />
-      
       <HowItWorks />
-      
-      <CTASection 
-        isLoggedIn={isLoggedIn} 
-        handleCreateRoom={handleCreateRoom} 
-      />
-      
+      <CTASection isLoggedIn={isLoggedIn} handleCreateRoom={handleCreateRoom} />
       <Footer />
-
     </motion.div>
   );
 }

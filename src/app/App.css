@@ -1,88 +1,103 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ============================================================
+   CODEV DESIGN SYSTEM — Vercel + VS Code Hybrid
+   ============================================================ */
+
+/* ── Light mode tokens (unused, app is always dark) ── */
 :root {
   --card: #ffffff;
-  --ring: #6366f1;
-  --input: #f0f1f3;
-  --muted: #f4f4f5;
-  --accent: #f0f1f3;
-  --border: #e4e4e7;
-  --radius: 0.5rem;
-  --chart-1: #6366f1;
-  --chart-2: #10b981;
+  --ring: #000000;
+  --input: #f5f5f5;
+  --muted: #f5f5f5;
+  --accent: #f5f5f5;
+  --border: #e5e5e5;
+  --radius: 0.375rem;
+  --chart-1: #000000;
+  --chart-2: #22c55e;
   --chart-3: #f59e0b;
-  --chart-4: #6366f1;
+  --chart-4: #a78bfa;
   --chart-5: #ec4899;
   --popover: #ffffff;
-  --primary: #6366f1;
+  --primary: #000000;
   --sidebar: #fafafa;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --secondary: #e5e7eb;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  --secondary: #e5e5e5;
   --background: #ffffff;
-  --font-serif: Georgia, serif;
-  --foreground: #18181b;
-  --destructive: #dc2626;
-  --shadow-blur: 3px;
-  --shadow-color: rgba(0, 0, 0, 0.06);
-  --shadow-spread: 0px;
-  --shadow-opacity: 0.06;
-  --sidebar-ring: #6366f1;
-  --sidebar-accent: #6366f1;
-  --sidebar-border: #e4e4e7;
-  --card-foreground: #18181b;
-  --shadow-offset-x: 0px;
-  --shadow-offset-y: 1px;
-  --sidebar-primary: #6366f1;
-  --muted-foreground: #71717a;
-  --accent-foreground: #18181b;
-  --popover-foreground: #18181b;
-  --primary-foreground: #ffffff;
-  --sidebar-foreground: #18181b;
-  --secondary-foreground: #18181b;
-  --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-primary-foreground: #ffffff;
-}
-
-.dark {
-  --card: #111827; /* Gray 900 */
-  --ring: #818cf8; /* Indigo 400 */
-  --input: #1f2937; /* Gray 800 */
-  --muted: #1f2937;
-  --accent: #1e1b4b; /* Indigo 950 */
-  --border: #374151; /* Gray 700 */
-  --radius: 0.5rem;
-  --chart-1: #818cf8;
-  --chart-2: #34d399;
-  --chart-3: #fbbf24;
-  --chart-4: #a78bfa;
-  --chart-5: #f472b6;
-  --popover: #111827;
-  --primary: #6366f1; /* Indigo 500 */
-  --sidebar: #0f172a; /* Slate 900 */
-  --secondary: #1f2937;
-  --background: #030712; /* Gray 950 - deepest black/blue */
-  --foreground: #f9fafb;
+  --foreground: #0a0a0a;
   --destructive: #ef4444;
-  --shadow-color: rgba(0, 0, 0, 0.5);
-  --sidebar-ring: #818cf8;
-  --sidebar-accent: #1e293b;
-  --sidebar-border: #1e293b;
-  --card-foreground: #f9fafb;
-  --sidebar-primary: #818cf8;
-  --muted-foreground: #9ca3af;
-  --accent-foreground: #f9fafb;
-  --popover-foreground: #f9fafb;
+  --muted-foreground: #737373;
+  --accent-foreground: #0a0a0a;
+  --popover-foreground: #0a0a0a;
   --primary-foreground: #ffffff;
-  --sidebar-foreground: #e2e8f0;
-  --secondary-foreground: #f9fafb;
+  --secondary-foreground: #0a0a0a;
   --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #f9fafb;
+  --card-foreground: #0a0a0a;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #000000;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-primary: #000000;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-accent-foreground: #0a0a0a;
   --sidebar-primary-foreground: #ffffff;
 }
 
+/* ── Dark mode tokens — Vercel + VS Code Hybrid ── */
+.dark {
+  /* Backgrounds: Vercel pitch blacks */
+  --background: #000000;
+  --card: #0a0a0a;
+  --sidebar: #080808;
+  --popover: #0a0a0a;
+  --muted: #111111;
+  --accent: #111111;
+  --input: #111111;
+
+  /* Borders: ultra-thin, barely visible */
+  --border: #1a1a1a;
+
+  /* Typography */
+  --foreground: #ededed;
+  --card-foreground: #ededed;
+  --popover-foreground: #ededed;
+  --muted-foreground: #737373;
+  --accent-foreground: #ededed;
+  --secondary-foreground: #ededed;
+
+  /* Primary: Vercel white accent */
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+
+  /* Semantic colors */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Ring */
+  --ring: #333333;
+
+  /* Border radius — slightly sharper than default */
+  --radius: 0.375rem;
+
+  /* Chart/Accent colors — VS Code palette */
+  --chart-1: #ffffff;        /* white — primary accent */
+  --chart-2: #3fb950;        /* GitHub green — success/run */
+  --chart-3: #e3b341;        /* GitHub yellow — warning */
+  --chart-4: #d2a8ff;        /* GitHub purple — keywords */
+  --chart-5: #f78166;        /* GitHub coral — errors */
+
+  /* Sidebar */
+  --sidebar-border: #1a1a1a;
+  --sidebar-ring: #333333;
+  --sidebar-accent: #111111;
+  --sidebar-primary: #ffffff;
+  --sidebar-foreground: #ededed;
+  --sidebar-accent-foreground: #ededed;
+  --sidebar-primary-foreground: #000000;
+}
+
+/* ── Tailwind theme bridge ── */
 @theme inline {
   --color-card: var(--card);
   --color-ring: var(--ring);
@@ -90,7 +105,6 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-border: var(--border);
-  --color-radius: var(--radius);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -103,19 +117,12 @@
   --font-sans: var(--font-sans);
   --color-secondary: var(--secondary);
   --color-background: var(--background);
-  --font-serif: var(--font-serif);
   --color-foreground: var(--foreground);
   --color-destructive: var(--destructive);
-  --color-shadow-blur: var(--shadow-blur);
-  --color-shadow-color: var(--shadow-color);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-shadow-spread: var(--shadow-spread);
-  --color-shadow-opacity: var(--shadow-opacity);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-border: var(--sidebar-border);
   --color-card-foreground: var(--card-foreground);
-  --color-shadow-offset-x: var(--shadow-offset-x);
-  --color-shadow-offset-y: var(--shadow-offset-y);
   --color-sidebar-primary: var(--sidebar-primary);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent-foreground: var(--accent-foreground);
@@ -128,47 +135,295 @@
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
 }
 
+/* ============================================================
+   GLOBAL RESETS & BASE STYLES
+   ============================================================ */
+
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: #1a1a1a transparent;
+  box-sizing: border-box;
 }
 
-button, 
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border-radius: 2px;
+}
+
+html {
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+code, pre, kbd, samp, .font-mono {
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+button,
 [role="button"],
 a {
   cursor: pointer;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+/* ============================================================
+   BACKGROUNDS
+   ============================================================ */
+
+/* Dot grid — VS Code-inspired. Used on landing and auth pages. */
+.dot-grid-bg {
+  background-color: #000000;
+  background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+  background-size: 24px 24px;
 }
+
+/* Subtle noise overlay — breaks up flat black to feel less "AI-ish" */
+.noise-overlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* Legacy — kept for compatibility during transition */
+.auth-mesh-bg {
+  background-color: #000000;
+  background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ============================================================
+   SURFACE UTILITIES (replaces glass-panel)
+   ============================================================ */
+
+/* Clean solid surface — the new standard card/panel style */
+.surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+/* Subtle top-highlight — makes flat surfaces feel tactile */
+.surface-highlight {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Legacy glass — kept for workspace header/panels during transition */
+.glass-panel {
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #1a1a1a;
+}
+
+.glass-header {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* ============================================================
+   BUTTON UTILITIES
+   ============================================================ */
+
+/* Vercel-style primary button — white with internal highlight */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Geist', sans-serif;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.8);
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+/* Secondary — dark bordered button */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Geist', sans-serif;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid #1a1a1a;
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  transition: background 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.btn-secondary:hover {
+  background: #111111;
+  border-color: #333333;
+}
+
+/* Green "Run" button — VS Code terminal green */
+.btn-run {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: 'Geist', sans-serif;
+  background: #238636;
+  color: #ffffff;
+  border: 1px solid rgba(35, 134, 54, 0.6);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.btn-run:hover {
+  background: #2ea043;
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Vercel-grade heading — tight tracking, sharp weight */
+.heading-xl {
+  font-family: 'Geist', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.heading-lg {
+  font-family: 'Geist', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* Code/ID display — monospace highlight */
+.code-badge {
+  font-family: 'Geist Mono', monospace;
+  font-size: 0.75rem;
+  background: #111111;
+  border: 1px solid #1a1a1a;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  color: #737373;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
 
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.7; }
 }
 
-.glass-panel {
-  background: rgba(30, 41, 59, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
 }
 
-.glass-header {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
-.auth-mesh-bg {
-  background-color: #030712;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes dash-fill {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Shimmer text effect — used on announcement pills */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #737373 0%,
+    #ededed 40%,
+    #ededed 60%,
+    #737373 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Cursor blink — for mock editor */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* ============================================================
+   INTERACTIVE STATES
+   ============================================================ */
+
+/* Card hover: border lights up to white, subtle top glow */
+.card-interactive {
+  border: 1px solid #1a1a1a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-interactive:hover {
+  border-color: #333333;
+  box-shadow: 0 0 0 1px #1a1a1a, 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Focus ring — white outline, VS Code style */
+:focus-visible {
+  outline: 1px solid #333333;
+  outline-offset: 2px;
 }
