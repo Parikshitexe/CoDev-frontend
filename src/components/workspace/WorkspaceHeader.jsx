@@ -68,7 +68,10 @@ export default function WorkspaceHeader({
             connectionStatus === "connected" ? "bg-chart-2" :
             connectionStatus === "connecting" ? "bg-chart-3 animate-pulse" : "bg-destructive animate-ping"
           }`}></span>
-          <span className="font-mono">{roomId.slice(0, 8)}</span>
+          <span className="font-medium">
+            {connectionStatus === "connected" ? "Connected" : 
+             connectionStatus === "connecting" ? "Connecting..." : "Disconnected"}
+          </span>
         </div>
         
         {isLoggedIn && (

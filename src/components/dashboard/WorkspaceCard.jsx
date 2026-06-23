@@ -58,11 +58,7 @@ export default function WorkspaceCard({
         )}
       </div>
       
-      <p className="text-[11px] text-muted-foreground font-mono truncate mb-3 select-all bg-muted px-2 py-1 rounded w-fit max-w-full">
-        {workspace.roomId}
-      </p>
-      
-      <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1">
+      <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1 mt-2">
         <Clock className="w-3 h-3" /> {formatDate(workspace.savedAt)}
       </p>
 

@@ -48,7 +48,7 @@ function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           setWorkspaces(data);
-        } else if (response.status === 401 || response.status === 400) {
+        } else if (response.status === 401) {
           handleAuthError();
         }
       } catch (err) {
@@ -63,7 +63,13 @@ function Dashboard() {
 
   const handleCreateNew = async (e) => {
     e.preventDefault();
-    if (!newWorkspaceName.trim()) return;
+    const trimmedName = newWorkspaceName.trim();
+    if (!trimmedName) return;
+
+    if (workspaces.some(w => w.name.toLowerCase() === trimmedName.toLowerCase())) {
+      toast.error("A workspace with this name already exists. Please choose a unique name.");
+      return;
+    }
 
     const newRoomId = uuidv4();
 
@@ -76,14 +82,17 @@ function Dashboard() {
         },
         body: JSON.stringify({
           roomId: newRoomId,
-          name: newWorkspaceName.trim()
+          name: trimmedName
         })
       });
 
       if (response.ok) {
         navigate(`/${newRoomId}`);
-      } else if (response.status === 401 || response.status === 400) {
+      } else if (response.status === 401) {
         handleAuthError();
+      } else if (response.status === 400) {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Bad request");
       }
     } catch (err) {
       console.error(err);
@@ -99,7 +108,7 @@ function Dashboard() {
 
       if (response.ok) {
         setWorkspaces(prev => prev.filter(w => w.roomId !== roomId));
-      } else if (response.status === 401 || response.status === 400) {
+      } else if (response.status === 401) {
         handleAuthError();
       }
     } catch (err) {
@@ -116,8 +125,15 @@ function Dashboard() {
   };
 
   const handleRenameWorkspace = async (roomId) => {
-    if (!editWorkspaceName.trim()) {
+    const trimmedName = editWorkspaceName.trim();
+    if (!trimmedName) {
       setEditingRoomId(null);
+      return;
+    }
+
+    if (workspaces.some(w => w.roomId !== roomId && w.name.toLowerCase() === trimmedName.toLowerCase())) {
+      toast.error("A workspace with this name already exists.");
+      // Don't reset editingRoomId here so they can fix the name
       return;
     }
 
@@ -128,13 +144,16 @@ function Dashboard() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name: editWorkspaceName.trim() })
+        body: JSON.stringify({ name: trimmedName })
       });
 
       if (response.ok) {
-        setWorkspaces(prev => prev.map(w => w.roomId === roomId ? { ...w, name: editWorkspaceName.trim() } : w));
-      } else if (response.status === 401 || response.status === 400) {
+        setWorkspaces(prev => prev.map(w => w.roomId === roomId ? { ...w, name: trimmedName } : w));
+      } else if (response.status === 401) {
         handleAuthError();
+      } else if (response.status === 400) {
+        const errorData = await response.json();
+        toast.error(errorData.error || "Bad request");
       }
     } catch (err) {
       console.error(err);
