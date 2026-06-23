@@ -1,5 +1,13 @@
-import { Code2, Play, MessageSquare } from "lucide-react";
+import { Code2, Play, MessageSquare, Share2, BookmarkPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function WorkspaceHeader({
   roomId,
@@ -20,35 +28,38 @@ export default function WorkspaceHeader({
   const navigate = useNavigate();
 
   return (
-    <header className="h-12 border-b border-border bg-card flex items-center justify-between px-3 shrink-0 z-10">
+    <header className="h-14 glass-header flex items-center justify-between px-4 shrink-0 z-10">
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3 border-r border-border pr-4">
-          <button 
+          <Button 
+            variant="ghost"
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent border-none outline-none cursor-pointer text-foreground"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent px-2"
           >
-            <Code2 className="text-primary w-4 h-4" />
+            <Code2 className="text-primary w-5 h-5" />
             <span className="font-semibold tracking-tight text-sm hidden sm:block">CoDev</span>
-          </button>
+          </Button>
           {isLoggedIn && (
-            <button
+            <Button
+              variant="link"
               onClick={() => navigate("/dashboard")}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer bg-transparent border-none outline-none"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2"
             >
               Dashboard
-            </button>
+            </Button>
           )}
         </div>
-        <select 
-          value={language}
-          onChange={handleLanguageChange}
-          className="bg-input border border-border text-foreground text-xs rounded-md px-2 py-1 focus:border-primary outline-none"
-        >
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-          <option value="cpp">C++</option>
-          <option value="java">Java</option>
-        </select>
+        <Select value={language} onValueChange={(val) => handleLanguageChange({ target: { value: val } })}>
+          <SelectTrigger className="w-[120px] h-8 text-xs font-medium bg-input/50 backdrop-blur-sm border-border/50 hover:bg-input transition-colors">
+            <SelectValue placeholder="Language" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="javascript">JavaScript</SelectItem>
+            <SelectItem value="python">Python</SelectItem>
+            <SelectItem value="cpp">C++</SelectItem>
+            <SelectItem value="java">Java</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="flex items-center gap-2">
@@ -61,62 +72,64 @@ export default function WorkspaceHeader({
         </div>
         
         {isLoggedIn && (
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleBookmark}
             disabled={isBookmarked}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border transition-colors
-              ${isBookmarked
-                ? "text-muted-foreground border-border cursor-default"
-                : "text-primary border-primary/30 hover:bg-primary/10"}`}
+            className={`h-8 px-3 text-xs ${isBookmarked ? "text-muted-foreground" : "text-primary border-primary/30 hover:bg-primary/10"}`}
           >
+            <BookmarkPlus className="w-3.5 h-3.5 mr-1.5" />
             {isBookmarked ? "Saved" : "Save"}
-          </button>
+          </Button>
         )}
 
         <div className="relative">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleShareWorkspace}
-            className="flex items-center px-2.5 py-1 rounded-md text-xs border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="h-8 px-3 text-xs text-muted-foreground"
           >
+            <Share2 className="w-3.5 h-3.5 mr-1.5" />
             Share
-          </button>
+          </Button>
           {showShareTooltip && (
-            <div className="absolute right-0 top-8 bg-card text-foreground text-[10px] font-medium px-2 py-1 rounded border border-border shadow-sm whitespace-nowrap">
+            <div className="absolute right-0 top-10 bg-card text-foreground text-[10px] font-medium px-2 py-1 rounded border border-border shadow-sm whitespace-nowrap">
               Copied!
             </div>
           )}
         </div>
 
         {/* Phase 2: Chat Toggle */}
-        <button
+        <Button
+          variant={isChatOpen ? "secondary" : "outline"}
+          size="sm"
           onClick={toggleChat}
-          className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border transition-colors
-            ${isChatOpen ? "bg-muted text-foreground border-border" : "text-muted-foreground border-border hover:bg-muted"}`}
+          className="relative h-8 px-3 text-xs"
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
           <span className="hidden sm:inline">Chat</span>
           {!isChatOpen && unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white shadow-sm ring-1 ring-background">
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white shadow-sm ring-2 ring-background">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-        </button>
+        </Button>
 
-        <button 
+        <Button 
+          size="sm"
           onClick={handleRunCode}
           disabled={isExecuting}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-colors
-            ${isExecuting 
-              ? "bg-muted text-muted-foreground cursor-not-allowed" 
-              : "bg-[#238636] hover:bg-[#2ea043] text-white"}`}
+          className={`h-8 px-4 text-xs font-medium ${isExecuting ? "" : "bg-[#238636] hover:bg-[#2ea043] text-white"}`}
         >
           {isExecuting ? (
-            <span className="animate-spin w-3 h-3 border-2 border-current border-t-transparent rounded-full" />
+            <span className="animate-spin w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full mr-1.5" />
           ) : (
-            <Play className="w-3 h-3 fill-current" />
+            <Play className="w-3.5 h-3.5 fill-current mr-1.5" />
           )}
           {isExecuting ? "Running" : "Run"}
-        </button>
+        </Button>
       </div>
     </header>
   );

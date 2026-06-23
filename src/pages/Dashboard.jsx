@@ -22,6 +22,8 @@ import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import { toast } from "sonner";
 import WorkspaceCard from "../components/dashboard/WorkspaceCard";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -162,7 +164,7 @@ function Dashboard() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="dark min-h-screen w-full bg-background flex font-sans text-foreground overflow-hidden"
+      className="dark min-h-screen w-full auth-mesh-bg flex font-sans text-foreground overflow-hidden"
     >
       
       <DashboardSidebar 
@@ -182,13 +184,10 @@ function Dashboard() {
                   <h1 className="text-xl font-semibold text-foreground mb-1">Workspaces</h1>
                   <p className="text-sm text-muted-foreground">Your saved collaborative environments</p>
                 </div>
-                <button 
-                  onClick={() => setShowCreateModal(true)}
-                  className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 py-2 rounded-md font-medium transition-colors text-sm"
-                >
-                  <Plus className="w-4 h-4" />
+                <Button onClick={() => setShowCreateModal(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
                   New workspace
-                </button>
+                </Button>
               </div>
 
               {isLoading ? (
@@ -201,12 +200,12 @@ function Dashboard() {
                   <Folder className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
                   <h3 className="text-sm font-medium text-foreground mb-1">No workspaces yet</h3>
                   <p className="text-muted-foreground text-sm max-w-xs mb-5">Create a workspace to start collaborating in real time.</p>
-                  <button 
+                  <Button 
+                    variant="link"
                     onClick={() => setShowCreateModal(true)}
-                    className="flex items-center gap-1.5 text-primary hover:underline text-sm font-medium"
                   >
-                    <Plus className="w-4 h-4" /> Create one now
-                  </button>
+                    <Plus className="w-4 h-4 mr-2" /> Create one now
+                  </Button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -240,11 +239,11 @@ function Dashboard() {
                   <div className="space-y-3">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm text-muted-foreground">Display name</label>
-                      <input type="text" readOnly defaultValue={user.username} className="p-2 rounded-md bg-muted border border-border outline-none text-foreground text-sm opacity-70 cursor-not-allowed" />
+                      <Input type="text" readOnly defaultValue={user.username} className="opacity-70 cursor-not-allowed" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm text-muted-foreground">Email</label>
-                      <input type="email" readOnly defaultValue={user.email} className="p-2 rounded-md bg-muted border border-border outline-none text-foreground text-sm opacity-70 cursor-not-allowed" />
+                      <Input type="email" readOnly defaultValue={user.email} className="opacity-70 cursor-not-allowed" />
                     </div>
                   </div>
                 </div>

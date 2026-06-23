@@ -47,39 +47,39 @@
 }
 
 .dark {
-  --card: #18181b;
-  --ring: #818cf8;
-  --input: #27272a;
-  --muted: #27272a;
-  --accent: #27272a;
-  --border: #3f3f46;
+  --card: #111827; /* Gray 900 */
+  --ring: #818cf8; /* Indigo 400 */
+  --input: #1f2937; /* Gray 800 */
+  --muted: #1f2937;
+  --accent: #1e1b4b; /* Indigo 950 */
+  --border: #374151; /* Gray 700 */
   --radius: 0.5rem;
   --chart-1: #818cf8;
   --chart-2: #34d399;
   --chart-3: #fbbf24;
   --chart-4: #a78bfa;
   --chart-5: #f472b6;
-  --popover: #18181b;
-  --primary: #818cf8;
-  --sidebar: #09090b;
-  --secondary: #27272a;
-  --background: #09090b;
-  --foreground: #fafafa;
-  --destructive: #f87171;
-  --shadow-color: rgba(0, 0, 0, 0.4);
+  --popover: #111827;
+  --primary: #6366f1; /* Indigo 500 */
+  --sidebar: #0f172a; /* Slate 900 */
+  --secondary: #1f2937;
+  --background: #030712; /* Gray 950 - deepest black/blue */
+  --foreground: #f9fafb;
+  --destructive: #ef4444;
+  --shadow-color: rgba(0, 0, 0, 0.5);
   --sidebar-ring: #818cf8;
-  --sidebar-accent: #27272a;
-  --sidebar-border: #27272a;
-  --card-foreground: #fafafa;
+  --sidebar-accent: #1e293b;
+  --sidebar-border: #1e293b;
+  --card-foreground: #f9fafb;
   --sidebar-primary: #818cf8;
-  --muted-foreground: #a1a1aa;
-  --accent-foreground: #fafafa;
-  --popover-foreground: #fafafa;
+  --muted-foreground: #9ca3af;
+  --accent-foreground: #f9fafb;
+  --popover-foreground: #f9fafb;
   --primary-foreground: #ffffff;
-  --sidebar-foreground: #d4d4d8;
-  --secondary-foreground: #fafafa;
+  --sidebar-foreground: #e2e8f0;
+  --secondary-foreground: #f9fafb;
   --destructive-foreground: #ffffff;
-  --sidebar-accent-foreground: #fafafa;
+  --sidebar-accent-foreground: #f9fafb;
   --sidebar-primary-foreground: #ffffff;
 }
 
@@ -133,6 +133,12 @@
   scrollbar-color: var(--border) transparent;
 }
 
+button, 
+[role="button"],
+a {
+  cursor: pointer;
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
@@ -141,4 +147,28 @@
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.7; }
+}
+
+.glass-panel {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-header {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.auth-mesh-bg {
+  background-color: #030712;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
 }

@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { MessageSquare, Send, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function ChatPanel({
   isChatOpen,
@@ -40,18 +41,18 @@ export default function ChatPanel({
       )}
 
       <aside 
-        className={`fixed sm:static top-0 right-0 h-full w-72 sm:w-80 bg-sidebar border-l border-sidebar-border flex flex-col shrink-0 z-30 transition-transform duration-300 ease-in-out
+        className={`fixed sm:static top-0 right-0 h-full w-72 sm:w-80 glass-panel border-l border-sidebar-border flex flex-col shrink-0 z-30 transition-transform duration-300 ease-in-out
           ${isChatOpen ? "translate-x-0" : "translate-x-full hidden"}`}
         style={{ display: isChatOpen ? 'flex' : 'none' }}
       >
-        <div className="px-3 py-2.5 border-b border-sidebar-border flex items-center justify-between">
+        <div className="px-3 py-2.5 border-b border-sidebar-border/50 flex items-center justify-between bg-card/40 backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground font-medium">Room Chat</span>
+            <MessageSquare className="w-4 h-4 text-primary" />
+            <span className="text-xs text-foreground font-semibold uppercase tracking-wider">Room Chat</span>
           </div>
-          <button onClick={toggleChat} className="p-1 hover:bg-muted rounded-md text-muted-foreground transition-colors">
+          <Button variant="ghost" size="icon" onClick={toggleChat} className="h-6 w-6 text-muted-foreground hover:text-foreground">
             <X className="w-3.5 h-3.5" />
-          </button>
+          </Button>
         </div>
         
         <div className="flex-1 px-3 py-3 overflow-y-auto flex flex-col gap-2.5">
@@ -74,9 +75,9 @@ export default function ChatPanel({
               const showHeader = !prevMsg || prevMsg.type === "system" || prevMsg.sender !== msg.sender || prevMsg.time !== msg.time;
 
               return (
-                <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} ${!showHeader ? 'mt-0' : 'mt-1'}`}>
-                  {showHeader && <span className="text-[10px] text-muted-foreground mb-0.5">{msg.sender} · {msg.time}</span>}
-                  <div className={`px-2.5 py-1.5 rounded-md text-xs max-w-[85%] break-words whitespace-pre-wrap ${isMe ? 'bg-primary/15 text-foreground' : 'bg-card border border-border text-foreground'}`}>
+                <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} ${!showHeader ? 'mt-0' : 'mt-1.5'}`}>
+                  {showHeader && <span className="text-[10px] text-muted-foreground/60 mb-0.5">{msg.sender} · {msg.time}</span>}
+                  <div className={`px-3 py-2 rounded-xl text-xs max-w-[85%] break-words whitespace-pre-wrap shadow-sm ${isMe ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-card border border-border text-foreground rounded-tl-sm'}`}>
                     {msg.text}
                   </div>
                 </div>
@@ -86,20 +87,20 @@ export default function ChatPanel({
           <div ref={chatEndRef} />
         </div>
 
-        <div className="p-2.5 border-t border-sidebar-border bg-sidebar">
-          <form onSubmit={handleSendMessage} className="flex gap-1.5 items-end">
+        <div className="p-3 border-t border-sidebar-border/50 bg-card/40 backdrop-blur-sm">
+          <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
             <textarea 
               ref={textareaRef}
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Message... (Shift+Enter for new line)" 
-              className="flex-1 bg-input border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none resize-none overflow-hidden min-h-[32px]"
+              placeholder="Message..." 
+              className="flex-1 bg-input/50 backdrop-blur-sm border border-border/50 rounded-xl px-3 py-2 text-xs text-foreground focus:border-primary/50 focus:bg-input transition-all outline-none resize-none overflow-hidden min-h-[36px]"
               rows={1}
             />
-            <button type="submit" disabled={!chatInput.trim()} className="p-1.5 mb-0.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0">
-              <Send className="w-3.5 h-3.5" />
-            </button>
+            <Button type="submit" size="icon" disabled={!chatInput.trim()} className="h-9 w-9 rounded-xl shrink-0">
+              <Send className="w-4 h-4 ml-0.5" />
+            </Button>
           </form>
         </div>
       </aside>

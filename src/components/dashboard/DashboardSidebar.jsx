@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Code2, Folder, Settings, Clock, LogOut, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardSidebar({ user, activeTab, setActiveTab, handleSignOut }) {
   const navigate = useNavigate();
 
   return (
-    <aside className="w-60 bg-sidebar border-r border-sidebar-border flex flex-col shrink-0">
+    <aside className="w-60 bg-sidebar/50 backdrop-blur-md border-r border-sidebar-border flex flex-col shrink-0">
       
       <div className="px-5 py-4 border-b border-sidebar-border">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-sidebar-foreground">
@@ -24,59 +25,55 @@ export default function DashboardSidebar({ user, activeTab, setActiveTab, handle
         </div>
       </div>
 
-      <nav className="flex-1 px-3 py-3 space-y-0.5">
-        <button 
+      <nav className="flex-1 px-3 py-3 space-y-1">
+        <Button 
+          variant="ghost"
           onClick={() => navigate("/")}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors text-sm text-left"
+          className="w-full justify-start text-muted-foreground hover:text-sidebar-foreground"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Back to home
-        </button>
+        </Button>
 
         <div className="h-px bg-sidebar-border my-2" />
 
-        <button 
+        <Button 
+          variant={activeTab === "workspaces" ? "secondary" : "ghost"}
           onClick={() => setActiveTab("workspaces")}
-          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-sm
-            ${activeTab === "workspaces" 
-              ? "bg-sidebar-accent text-sidebar-foreground font-medium" 
-              : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"}`}
+          className={`w-full justify-start ${activeTab !== "workspaces" ? "text-muted-foreground" : ""}`}
         >
-          <Folder className="w-4 h-4" />
+          <Folder className="w-4 h-4 mr-2" />
           Workspaces
-        </button>
+        </Button>
         
-        <button 
+        <Button 
+          variant={activeTab === "recent" ? "secondary" : "ghost"}
           onClick={() => setActiveTab("recent")}
-          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-sm
-            ${activeTab === "recent" 
-              ? "bg-sidebar-accent text-sidebar-foreground font-medium" 
-              : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"}`}
+          className={`w-full justify-start ${activeTab !== "recent" ? "text-muted-foreground" : ""}`}
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-4 h-4 mr-2" />
           Recent
-        </button>
+        </Button>
 
-        <button 
+        <Button 
+          variant={activeTab === "settings" ? "secondary" : "ghost"}
           onClick={() => setActiveTab("settings")}
-          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-sm
-            ${activeTab === "settings" 
-              ? "bg-sidebar-accent text-sidebar-foreground font-medium" 
-              : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"}`}
+          className={`w-full justify-start ${activeTab !== "settings" ? "text-muted-foreground" : ""}`}
         >
-          <Settings className="w-4 h-4" />
+          <Settings className="w-4 h-4 mr-2" />
           Settings
-        </button>
+        </Button>
       </nav>
 
       <div className="px-3 py-3 border-t border-sidebar-border">
-        <button 
+        <Button 
+          variant="ghost"
           onClick={handleSignOut}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors text-sm text-left"
+          className="w-full justify-start text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
-          <LogOut className="w-4 h-4" />
+          <LogOut className="w-4 h-4 mr-2" />
           Sign out
-        </button>
+        </Button>
       </div>
     </aside>
   );
