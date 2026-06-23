@@ -1,3 +1,13 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
 export default function CreateWorkspaceModal({
   showCreateModal,
   setShowCreateModal,
@@ -5,42 +15,38 @@ export default function CreateWorkspaceModal({
   newWorkspaceName,
   setNewWorkspaceName
 }) {
-  if (!showCreateModal) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card border border-border rounded-lg p-5 w-96 shadow-xl">
-        <h3 className="text-sm font-semibold text-foreground mb-4">New workspace</h3>
-        <form onSubmit={handleCreateNew} className="space-y-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-muted-foreground">Name</label>
-            <input 
+    <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>New workspace</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleCreateNew} className="space-y-4 pt-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-muted-foreground">Name</label>
+            <Input 
               type="text" 
               required
               value={newWorkspaceName}
               onChange={(e) => setNewWorkspaceName(e.target.value)}
               placeholder="e.g. Landing page refactor"
-              className="p-2.5 rounded-md bg-input border border-border focus:border-primary outline-none text-foreground text-sm"
               autoFocus
             />
           </div>
-          <div className="flex justify-end gap-2 pt-1">
-            <button 
+          <DialogFooter>
+            <Button 
               type="button" 
+              variant="outline"
               onClick={() => { setShowCreateModal(false); setNewWorkspaceName(""); }}
-              className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md transition-colors"
             >
               Cancel
-            </button>
-            <button 
-              type="submit" 
-              className="px-3 py-1.5 text-sm bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors font-medium"
-            >
+            </Button>
+            <Button type="submit">
               Create
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

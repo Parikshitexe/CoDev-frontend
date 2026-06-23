@@ -5,12 +5,14 @@ import { useRef, useMemo, useState, useEffect } from "react";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 import { Code2, Users } from "lucide-react";
+import { motion } from "framer-motion";
 
 import WorkspaceHeader from "../components/workspace/WorkspaceHeader";
 import ParticipantList from "../components/workspace/ParticipantList";
 import TerminalPanel from "../components/workspace/TerminalPanel";
 import ChatPanel from "../components/workspace/ChatPanel";
 import { useAuth } from "../hooks/useAuth";
+import { toast } from "sonner";
 
 const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
   ? "http://localhost:3000"
@@ -147,6 +149,7 @@ function Workspace() {
   const handleShareWorkspace = () => {
     const cleanUrl = `${window.location.origin}/${roomId}`;
     navigator.clipboard.writeText(cleanUrl);
+    toast.success("Workspace link copied!");
     setShowShareTooltip(true);
     setTimeout(() => setShowShareTooltip(false), 2000);
   };
@@ -439,6 +442,7 @@ function Workspace() {
     } catch (err) {
       yTerminal.delete(0, yTerminal.length);
       yTerminal.insert(0, `> Error: ${err.message || "Could not connect to execution server."}\n`);
+      toast.error(err.message || "Execution failed");
     } finally {
       ySettings.set("isExecuting", false);
     }
@@ -464,7 +468,11 @@ function Workspace() {
 
   if (isRoomFull) {
     return (
-      <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground"
+      >
         <main className="z-10 w-full max-w-sm px-6 text-center">
           <Users className="w-10 h-10 text-destructive mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2 text-foreground">Room is full</h2>
@@ -475,13 +483,17 @@ function Workspace() {
             Back to home
           </a>
         </main>
-      </div>
+      </motion.div>
     );
   }
 
   if (!username) {
     return (
-      <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground"
+      >
         <main className="z-10 w-full max-w-sm px-6">
           <div className="text-center mb-6">
             <Code2 className="w-8 h-8 text-primary mx-auto mb-3" />
@@ -496,24 +508,32 @@ function Workspace() {
             <button className="p-2.5 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors text-sm">Join</button>
           </form>
         </main>
-      </div>
+      </motion.div>
     );
   }
 
   if (username && (!ydoc || !provider)) {
     return (
-      <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground"
+      >
         <main className="z-10 flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
           <p className="text-muted-foreground text-sm">Connecting...</p>
         </main>
-      </div>
+      </motion.div>
     );
   }
 
 
   return (
-    <div className="dark h-screen w-full bg-background flex flex-col font-sans overflow-hidden text-foreground">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="dark h-screen w-full bg-background flex flex-col font-sans overflow-hidden text-foreground"
+    >
       {connectionStatus === "disconnected" && (
         <div className="bg-destructive/15 border-b border-destructive/20 text-destructive text-[11px] sm:text-xs py-1.5 px-3 flex items-center justify-center font-medium gap-1.5 select-none shrink-0 z-20">
           <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-ping shrink-0" />
@@ -584,7 +604,7 @@ function Workspace() {
           chatEndRef={chatEndRef}
         />
       </main>
-    </div>
+    </motion.div>
   );
 }
 

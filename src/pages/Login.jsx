@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Code2 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 function Login() {
   const navigate = useNavigate();
@@ -41,7 +42,11 @@ function Login() {
   };
 
   return (
-    <div className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="dark min-h-screen w-full bg-background relative flex flex-col items-center justify-center font-sans overflow-hidden text-foreground"
+    >
 
       <nav className="absolute top-0 w-full max-w-5xl mx-auto flex items-center justify-between px-6 py-5 z-10">
         <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity text-foreground">
@@ -133,7 +138,7 @@ function Login() {
           </Link>
         </p>
       </main>
-    </div>
+    </motion.div>
   );
 }
 

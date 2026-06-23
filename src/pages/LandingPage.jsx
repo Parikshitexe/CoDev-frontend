@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { motion } from "framer-motion";
 
 import Navbar from "../components/landing/Navbar";
 import HeroSection from "../components/landing/HeroSection";
@@ -41,7 +42,11 @@ function LandingPage() {
   };
 
   return (
-    <div className="dark min-h-screen w-full bg-background relative flex flex-col font-sans overflow-x-hidden text-foreground">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="dark min-h-screen w-full bg-background relative flex flex-col font-sans overflow-x-hidden text-foreground"
+    >
       
       {/* Background Grid */}
       <div className="fixed inset-0 z-0 pointer-events-none" style={{
@@ -78,7 +83,7 @@ function LandingPage() {
       
       <Footer />
 
-    </div>
+    </motion.div>
   );
 }
 

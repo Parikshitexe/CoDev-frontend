@@ -1,16 +1,38 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Folder, Clock, Plus } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-
-import DashboardSidebar from "../components/dashboard/DashboardSidebar";
-import WorkspaceCard from "../components/dashboard/WorkspaceCard";
-import CreateWorkspaceModal from "../components/dashboard/CreateWorkspaceModal";
+import { 
+  Code2, 
+  Terminal, 
+  LogOut, 
+  Plus, 
+  Search, 
+  Trash2, 
+  Copy, 
+  ExternalLink,
+  MoreVertical,
+  Check,
+  Edit2,
+  Folder,
+  Clock
+} from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import CreateWorkspaceModal from "../components/dashboard/CreateWorkspaceModal";
+import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import { toast } from "sonner";
+import WorkspaceCard from "../components/dashboard/WorkspaceCard";
+import { motion } from "framer-motion";
 
 function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("workspaces");
+  const [workspaces, setWorkspaces] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState("");
+  const [copiedId, setCopiedId] = useState(null);
+  const [editingRoomId, setEditingRoomId] = useState(null);
+  const [editWorkspaceName, setEditWorkspaceName] = useState("");
   const { user, logout, handleAuthError } = useAuth({ requireAuth: true });
 
   useEffect(() => {
@@ -87,6 +109,7 @@ function Dashboard() {
     const link = `${window.location.origin}/${roomId}`;
     navigator.clipboard.writeText(link);
     setCopiedId(roomId);
+    toast.success("Link copied to clipboard!");
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -136,7 +159,11 @@ function Dashboard() {
   };
 
   return (
-    <div className="dark min-h-screen w-full bg-background flex font-sans text-foreground overflow-hidden">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="dark min-h-screen w-full bg-background flex font-sans text-foreground overflow-hidden"
+    >
       
       <DashboardSidebar 
         user={user} 
@@ -246,7 +273,7 @@ function Dashboard() {
         newWorkspaceName={newWorkspaceName}
         setNewWorkspaceName={setNewWorkspaceName}
       />
-    </div>
+    </motion.div>
   );
 }
 
