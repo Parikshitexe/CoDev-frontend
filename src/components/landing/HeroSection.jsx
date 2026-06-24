@@ -26,9 +26,9 @@ export default function HeroSection({ isLoggedIn, handleCreateRoom }) {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-[-0.04em] leading-[1.05] mb-5 max-w-3xl text-white"
       >
-        The collaborative IDE
+        Write code together,
         <br />
-        <span className="text-[#737373]">that gets out of your way.</span>
+        <span className="text-[#737373]">in real time.</span>
       </motion.h1>
 
       {/* Sub-headline */}

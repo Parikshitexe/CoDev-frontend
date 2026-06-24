@@ -273,11 +273,31 @@ function Dashboard() {
           {activeTab === "recent" && (
             <div>
               <h1 className="text-xl font-semibold text-foreground mb-6">Recent activity</h1>
-              <div className="border border-border rounded-lg p-10 flex flex-col items-center justify-center text-center">
-                <Clock className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
-                <h3 className="text-sm font-medium text-foreground mb-1">Nothing here yet</h3>
-                <p className="text-muted-foreground text-sm max-w-xs">Activity from your workspaces will show up here.</p>
-              </div>
+              {workspaces.length === 0 ? (
+                <div className="border border-border rounded-lg p-10 flex flex-col items-center justify-center text-center">
+                  <Clock className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
+                  <h3 className="text-sm font-medium text-foreground mb-1">Nothing here yet</h3>
+                  <p className="text-muted-foreground text-sm max-w-xs">Activity from your workspaces will show up here.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {workspaces.slice(0, 6).map((workspace, idx) => (
+                    <WorkspaceCard
+                      key={idx}
+                      workspace={workspace}
+                      editingRoomId={editingRoomId}
+                      editWorkspaceName={editWorkspaceName}
+                      setEditWorkspaceName={setEditWorkspaceName}
+                      handleRenameWorkspace={handleRenameWorkspace}
+                      setEditingRoomId={setEditingRoomId}
+                      formatDate={formatDate}
+                      handleCopyLink={handleCopyLink}
+                      copiedId={copiedId}
+                      handleDelete={handleDelete}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

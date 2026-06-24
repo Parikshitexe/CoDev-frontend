@@ -388,9 +388,23 @@ function Workspace() {
     window.history.replaceState({}, "", `/${roomId}?username=${enteredUsername}`);
   };
 
-  const handleLanguageChange = (e) => {
+  const handleLanguageChange = async (e) => {
     if (!ySettings) return;
-    ySettings.set("language", e.target.value);
+    const newLang = e.target.value;
+    ySettings.set("language", newLang);
+
+    if (isLoggedIn) {
+      try {
+        await fetch(`${SERVER_URL}/api/workspaces/${roomId}/language`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ language: newLang })
+        });
+      } catch (err) {
+        console.error("Failed to sync language to backend:", err);
+      }
+    }
   };
 
   const handleRunCode = async () => {

@@ -1,4 +1,5 @@
-import { Code2, Edit2, Clock, Play, Copy, Check, Trash2 } from "lucide-react";
+import { Edit2, Clock, Play, Copy, Check, Trash2 } from "lucide-react";
+import LanguageIcon from "../icons/LanguageIcon";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -23,7 +24,8 @@ export default function WorkspaceCard({
   copiedId,
   handleDelete
 }) {
-  const lang = LANG_COLORS["javascript"]; // default; can be extended later
+  const langKey = workspace.language || "javascript";
+  const lang = LANG_COLORS[langKey] || LANG_COLORS["javascript"];
 
   return (
     <motion.div
@@ -37,7 +39,7 @@ export default function WorkspaceCard({
       {/* Header row */}
       <div className="flex items-center gap-2.5 mb-3">
         <div className="w-7 h-7 rounded-md border border-[#1a1a1a] bg-[#050505] flex items-center justify-center shrink-0">
-          <Code2 className="w-3.5 h-3.5 text-[#737373]" />
+          <LanguageIcon language={langKey} className="w-4 h-4" />
         </div>
 
         {editingRoomId === workspace.roomId ? (
@@ -70,17 +72,11 @@ export default function WorkspaceCard({
         )}
       </div>
 
-      {/* Date + Language badge */}
+      {/* Date */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-[11px] text-[#555] flex items-center gap-1">
           <Clock className="w-3 h-3" /> {formatDate(workspace.savedAt)}
         </p>
-        <span
-          className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded border"
-          style={{ color: lang.color, borderColor: `${lang.color}33`, background: `${lang.color}11` }}
-        >
-          {lang.label}
-        </span>
       </div>
 
       {/* Actions */}

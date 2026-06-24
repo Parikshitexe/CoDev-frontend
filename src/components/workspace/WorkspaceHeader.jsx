@@ -1,4 +1,5 @@
 import { Code2, Play, MessageSquare, Share2, BookmarkPlus, ChevronRight } from "lucide-react";
+import LanguageIcon from "../icons/LanguageIcon";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,14 +61,34 @@ export default function WorkspaceHeader({
           </div>
         )}
         <Select value={language} onValueChange={(val) => handleLanguageChange({ target: { value: val } })}>
-          <SelectTrigger className="w-[120px] h-8 text-xs font-medium bg-input/50 backdrop-blur-sm border-border/50 hover:bg-input transition-colors">
+          <SelectTrigger className="w-[130px] h-8 text-xs font-medium bg-[#050505] border-[#1a1a1a] hover:bg-[#111] transition-colors text-white">
             <SelectValue placeholder="Language" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="python">Python</SelectItem>
-            <SelectItem value="cpp">C++</SelectItem>
-            <SelectItem value="java">Java</SelectItem>
+          <SelectContent className="bg-[#050505] border-[#1a1a1a] text-white">
+            <SelectItem value="javascript">
+              <div className="flex items-center gap-2">
+                <LanguageIcon language="javascript" className="w-3.5 h-3.5" />
+                JavaScript
+              </div>
+            </SelectItem>
+            <SelectItem value="python">
+              <div className="flex items-center gap-2">
+                <LanguageIcon language="python" className="w-3.5 h-3.5" />
+                Python
+              </div>
+            </SelectItem>
+            <SelectItem value="cpp">
+              <div className="flex items-center gap-2">
+                <LanguageIcon language="cpp" className="w-3.5 h-3.5" />
+                C++
+              </div>
+            </SelectItem>
+            <SelectItem value="java">
+              <div className="flex items-center gap-2">
+                <LanguageIcon language="java" className="w-3.5 h-3.5" />
+                Java
+              </div>
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

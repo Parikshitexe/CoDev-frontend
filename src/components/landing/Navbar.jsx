@@ -13,10 +13,7 @@ export default function Navbar({ isLoggedIn }) {
           </div>
           <span className="text-sm font-semibold tracking-tight text-white">CoDev</span>
           {/* Live indicator */}
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full border border-[#1a1a1a] bg-[#0a0a0a] ml-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#3fb950] animate-pulse" />
-            <span className="text-[10px] text-[#3fb950] font-medium">Live</span>
-          </div>
+          
         </Link>
 
         {/* Nav links */}
