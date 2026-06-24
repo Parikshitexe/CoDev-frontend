@@ -19,6 +19,7 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import CreateWorkspaceModal from "../components/dashboard/CreateWorkspaceModal";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import ConfirmModal from "../components/dashboard/ConfirmModal";
 import { toast } from "sonner";
 import WorkspaceCard from "../components/dashboard/WorkspaceCard";
 import { motion } from "framer-motion";
@@ -35,6 +36,8 @@ function Dashboard() {
   const [copiedId, setCopiedId] = useState(null);
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [editWorkspaceName, setEditWorkspaceName] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [deleteModalData, setDeleteModalData] = useState({ isOpen: false, roomId: null });
   const { user, logout, handleAuthError } = useAuth({ requireAuth: true });
 
   useEffect(() => {
@@ -99,7 +102,14 @@ function Dashboard() {
     }
   };
 
-  const handleDelete = async (roomId) => {
+  const confirmDelete = (roomId) => {
+    setDeleteModalData({ isOpen: true, roomId });
+  };
+
+  const handleDelete = async () => {
+    const roomId = deleteModalData.roomId;
+    if (!roomId) return;
+
     try {
       const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
         method: "DELETE",
@@ -108,11 +118,15 @@ function Dashboard() {
 
       if (response.ok) {
         setWorkspaces(prev => prev.filter(w => w.roomId !== roomId));
+        toast.success("Workspace deleted successfully");
       } else if (response.status === 401) {
         handleAuthError();
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to delete workspace");
+    } finally {
+      setDeleteModalData({ isOpen: false, roomId: null });
     }
   };
 
@@ -163,7 +177,7 @@ function Dashboard() {
   };
 
   const handleSignOut = () => {
-    logout();
+    setShowLogoutModal(true);
   };
 
   if (!user) {
@@ -240,7 +254,7 @@ function Dashboard() {
                       formatDate={formatDate}
                       handleCopyLink={handleCopyLink}
                       copiedId={copiedId}
-                      handleDelete={handleDelete}
+                      handleDelete={confirmDelete}
                     />
                   ))}
                 </div>
@@ -293,7 +307,7 @@ function Dashboard() {
                       formatDate={formatDate}
                       handleCopyLink={handleCopyLink}
                       copiedId={copiedId}
-                      handleDelete={handleDelete}
+                      handleDelete={confirmDelete}
                     />
                   ))}
                 </div>
@@ -310,6 +324,26 @@ function Dashboard() {
         handleCreateNew={handleCreateNew}
         newWorkspaceName={newWorkspaceName}
         setNewWorkspaceName={setNewWorkspaceName}
+      />
+
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        setIsOpen={setShowLogoutModal}
+        title="Sign Out"
+        description="Are you sure you want to sign out of your account?"
+        confirmText="Sign Out"
+        variant="destructive"
+        onConfirm={() => logout()}
+      />
+
+      <ConfirmModal
+        isOpen={deleteModalData.isOpen}
+        setIsOpen={(isOpen) => setDeleteModalData(prev => ({ ...prev, isOpen }))}
+        title="Delete Workspace"
+        description="Are you sure you want to delete this workspace? This action cannot be undone and you will lose access to it."
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={handleDelete}
       />
     </motion.div>
   );

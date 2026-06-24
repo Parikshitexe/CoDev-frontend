@@ -29,8 +29,8 @@ export default function Footer() {
           </div>
           <span className="text-sm font-semibold text-white tracking-tight">CoDev</span>
         </div>
-        <p className="text-xs text-[#555] font-mono text-center">
-          Built with Yjs · React · Node.js · MongoDB
+        <p className="text-xs text-[#555] font-medium text-center">
+          Crafted for modern engineering teams.
         </p>
         <p className="text-xs text-[#555]">
           © {new Date().getFullYear()} CoDev

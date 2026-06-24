@@ -27,7 +27,7 @@ function LandingPage() {
           method: "POST",
           credentials: 'include',
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomId: newRoomId, name: "Quick Room" })
+          body: JSON.stringify({ roomId: newRoomId, name: `Quick Room ${newRoomId.slice(0, 6)}` })
         });
       } catch (err) {
         console.error(err);

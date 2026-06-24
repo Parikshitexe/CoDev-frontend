@@ -164,7 +164,7 @@ function Workspace() {
       doc,
       {
         autoConnect: true,
-        transports: ["websocket"]
+        auth: { roomId }
       }
     );
 
@@ -324,8 +324,13 @@ function Workspace() {
     const updateSettings = () => {
       const lang = ySettings.get("language") || "javascript";
       const exec = ySettings.get("isExecuting") || false;
+      const showInp = ySettings.get("showCustomInput") || false;
+      const custInp = ySettings.get("customInput") || "";
+      
       setLanguage(lang);
       setIsExecuting(exec);
+      setShowCustomInput(showInp);
+      setCustomInput(custInp);
     };
     ySettings.observe(updateSettings);
     updateSettings();
@@ -418,6 +423,7 @@ function Workspace() {
     yTerminal.insert(0, "> Executing code...\n");
 
     const startTime = performance.now();
+    const currentInput = ySettings.get("showCustomInput") ? (ySettings.get("customInput") || "") : "";
 
     try {
       const response = await fetch(`${SERVER_URL}/api/execute`, {
@@ -429,7 +435,7 @@ function Workspace() {
         body: JSON.stringify({ 
           code, 
           language,
-          input: showCustomInput ? customInput : "" 
+          input: currentInput 
         })
       });
 
@@ -599,11 +605,11 @@ function Workspace() {
 
           <TerminalPanel
             showCustomInput={showCustomInput}
-            setShowCustomInput={setShowCustomInput}
+            setShowCustomInput={(val) => ySettings?.set("showCustomInput", val)}
             terminalOutput={terminalOutput}
             terminalEndRef={terminalEndRef}
             customInput={customInput}
-            setCustomInput={setCustomInput}
+            setCustomInput={(val) => ySettings?.set("customInput", val)}
           />
         </section>
 
