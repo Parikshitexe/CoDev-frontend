@@ -152,6 +152,8 @@ export default function WorkspaceHeader({
         </Button>
 
         <Button 
+          id="run-code-btn"
+          title="Ctrl+Enter (or Cmd+Enter) to run"
           size="sm"
           onClick={handleRunCode}
           disabled={isExecuting}
@@ -162,7 +164,14 @@ export default function WorkspaceHeader({
           ) : (
             <Play className="w-3.5 h-3.5 fill-current mr-1.5" />
           )}
-          {isExecuting ? "Running" : "Run"}
+          <div className="flex flex-col items-start justify-center leading-none mt-px">
+            <span>{isExecuting ? "Running" : "Run"}</span>
+            {!isExecuting && (
+              <span className="hidden sm:block text-[8px] opacity-60 font-mono mt-[3px]">
+                Ctrl+Enter
+              </span>
+            )}
+          </div>
         </Button>
       </div>
     </header>

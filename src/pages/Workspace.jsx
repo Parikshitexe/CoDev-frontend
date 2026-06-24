@@ -369,9 +369,16 @@ function Workspace() {
     };
   }, [provider, ydoc, username, ySettings, yTerminal, yChat]);
 
-  const handleMount = (editor) => {
+  const handleMount = (editor, monaco) => {
     editorRef.current = editor;
     if (!yText || !provider) return;
+
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+      const runBtn = document.getElementById("run-code-btn");
+      if (runBtn && !runBtn.disabled) {
+        runBtn.click();
+      }
+    });
 
     const binding = new MonacoBinding(
       yText,
