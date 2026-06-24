@@ -121,7 +121,7 @@ function Login() {
             </div>
           )}
 
-          {/* OAuth buttons */}
+          {/* OAuth buttons (Commented out for MVP)
           <div className="flex flex-col gap-2.5 mb-6">
             <Button variant="outline" className="w-full bg-transparent border-[#1a1a1a] text-[#737373] hover:text-white hover:border-[#333] hover:bg-[#0a0a0a]">
               <svg viewBox="0 0 24 24" className="w-4 h-4 mr-2" fill="currentColor">
@@ -145,6 +145,7 @@ function Login() {
             <span className="px-3 text-xs text-[#555]">or</span>
             <div className="flex-1 border-t border-[#1a1a1a]" />
           </div>
+          */}
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4 w-full">
             <div className="flex flex-col gap-1.5">
@@ -160,7 +161,7 @@ function Login() {
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-[#737373] flex justify-between">
                 Password
-                <a href="#" className="text-[#555] hover:text-white transition-colors font-normal">Forgot?</a>
+                <Link to="/forgot-password" className="text-[#555] hover:text-white transition-colors font-normal">Forgot?</Link>
               </label>
               <Input
                 type="password"
