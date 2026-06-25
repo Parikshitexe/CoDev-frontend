@@ -50,7 +50,7 @@ function Dashboard() {
         });
         if (response.ok) {
           const data = await response.json();
-          setWorkspaces(data);
+          setWorkspaces(Array.isArray(data) ? data : []);
         } else if (response.status === 401) {
           handleAuthError();
         }
@@ -69,7 +69,7 @@ function Dashboard() {
     const trimmedName = newWorkspaceName.trim();
     if (!trimmedName) return;
 
-    if (workspaces.some(w => w.name.toLowerCase() === trimmedName.toLowerCase())) {
+    if (workspaces?.some(w => w?.name?.toLowerCase() === trimmedName.toLowerCase())) {
       toast.error("A workspace with this name already exists. Please choose a unique name.");
       return;
     }
@@ -95,7 +95,7 @@ function Dashboard() {
         handleAuthError();
       } else if (response.status === 400) {
         const errorData = await response.json();
-        toast.error(errorData.error || "Bad request");
+        toast.error(errorData?.error || "Bad request");
       }
     } catch (err) {
       console.error(err);
@@ -162,12 +162,12 @@ function Dashboard() {
       });
 
       if (response.ok) {
-        setWorkspaces(prev => prev.map(w => w.roomId === roomId ? { ...w, name: trimmedName } : w));
+        setWorkspaces(prev => prev?.map(w => w?.roomId === roomId ? { ...w, name: trimmedName } : w) ?? []);
       } else if (response.status === 401) {
         handleAuthError();
       } else if (response.status === 400) {
         const errorData = await response.json();
-        toast.error(errorData.error || "Bad request");
+        toast.error(errorData?.error || "Bad request");
       }
     } catch (err) {
       console.error(err);
@@ -228,7 +228,7 @@ function Dashboard() {
                   <span className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
                   Loading...
                 </div>
-              ) : workspaces.length === 0 ? (
+              ) : workspaces?.length === 0 ? (
                 <div className="border border-border rounded-lg p-12 flex flex-col items-center justify-center text-center">
                   <Folder className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
                   <h3 className="text-sm font-medium text-foreground mb-1">No workspaces yet</h3>
@@ -242,7 +242,7 @@ function Dashboard() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {workspaces.map((workspace, idx) => (
+                  {workspaces?.map((workspace, idx) => (
                     <WorkspaceCard
                       key={idx}
                       workspace={workspace}
@@ -272,11 +272,11 @@ function Dashboard() {
                   <div className="space-y-3">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm text-muted-foreground">Display name</label>
-                      <Input type="text" readOnly defaultValue={user.username} className="opacity-70 cursor-not-allowed" />
+                      <Input type="text" readOnly defaultValue={user?.username} className="opacity-70 cursor-not-allowed" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm text-muted-foreground">Email</label>
-                      <Input type="email" readOnly defaultValue={user.email} className="opacity-70 cursor-not-allowed" />
+                      <Input type="email" readOnly defaultValue={user?.email} className="opacity-70 cursor-not-allowed" />
                     </div>
                   </div>
                 </div>
@@ -287,7 +287,7 @@ function Dashboard() {
           {activeTab === "recent" && (
             <div>
               <h1 className="text-xl font-semibold text-foreground mb-6">Recent activity</h1>
-              {workspaces.length === 0 ? (
+              {workspaces?.length === 0 ? (
                 <div className="border border-border rounded-lg p-10 flex flex-col items-center justify-center text-center">
                   <Clock className="w-10 h-10 text-muted-foreground mb-3 opacity-40" />
                   <h3 className="text-sm font-medium text-foreground mb-1">Nothing here yet</h3>
@@ -295,7 +295,7 @@ function Dashboard() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {workspaces.slice(0, 6).map((workspace, idx) => (
+                  {workspaces?.slice(0, 6).map((workspace, idx) => (
                     <WorkspaceCard
                       key={idx}
                       workspace={workspace}

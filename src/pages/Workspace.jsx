@@ -228,18 +228,19 @@ function Workspace() {
     
     const updateUsers = () => {
       const states = Array.from(provider.awareness.getStates());
-      const sortedStates = states.filter(([_, s]) => s.user && s.user.name).sort((a, b) => a[0] - b[0]);
+      const sortedStates = states.filter(([_, s]) => s?.user?.name).sort((a, b) => a[0] - b[0]);
       
       const seen = new Set();
       const activeUsers = [];
       const currentNames = new Set();
       sortedStates.forEach(([clientId, state], index) => {
-        if (!seen.has(state.user.name)) {
-          seen.add(state.user.name);
-          currentNames.add(state.user.name);
+        const userName = state?.user?.name;
+        if (userName && !seen.has(userName)) {
+          seen.add(userName);
+          currentNames.add(userName);
           const color = colors[index % colors.length];
           activeUsers.push({
-            name: state.user.name,
+            name: userName,
             color: color
           });
         }
@@ -270,7 +271,7 @@ function Workspace() {
 
       sortedStates.forEach(([clientId, state], index) => {
         const color = colors[index % colors.length];
-        const name = state.user.name;
+        const name = state?.user?.name ?? 'Unknown';
         const styleId = `yjs-cursor-style-${clientId}`;
         let styleEl = document.getElementById(styleId);
         if (!styleEl) {
@@ -453,15 +454,15 @@ function Workspace() {
       yTerminal.delete(0, yTerminal.length);
 
       if (!response.ok) {
-        yTerminal.insert(0, `> Error: ${data.error || "Execution failed"}\n`);
+        yTerminal.insert(0, `> Error: ${data?.error || "Execution failed"}\n`);
       } else {
-        if (data.stdout) {
+        if (data?.stdout) {
           yTerminal.insert(0, data.stdout);
         }
-        if (data.stderr) {
+        if (data?.stderr) {
           yTerminal.insert(yTerminal.length, data.stderr);
         }
-        if (!data.stdout && !data.stderr) {
+        if (!data?.stdout && !data?.stderr) {
           yTerminal.insert(0, "> Program completed with no output.\n");
         }
         yTerminal.insert(yTerminal.length, `\n> Executed in ${executionTime}s.\n`);

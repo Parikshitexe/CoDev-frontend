@@ -33,9 +33,9 @@ function Login() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Login failed");
+      if (!response.ok) throw new Error(data?.error || "Login failed");
 
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify(data?.user));
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);

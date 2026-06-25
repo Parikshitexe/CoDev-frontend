@@ -24,7 +24,7 @@ export default function WorkspaceCard({
   copiedId,
   handleDelete
 }) {
-  const langKey = workspace.language || "javascript";
+  const langKey = workspace?.language || "javascript";
   const lang = LANG_COLORS[langKey] || LANG_COLORS["javascript"];
 
   return (
@@ -42,14 +42,14 @@ export default function WorkspaceCard({
           <LanguageIcon language={langKey} className="w-4 h-4" />
         </div>
 
-        {editingRoomId === workspace.roomId ? (
+        {editingRoomId === workspace?.roomId ? (
           <Input
             type="text"
             value={editWorkspaceName}
             onChange={(e) => setEditWorkspaceName(e.target.value)}
-            onBlur={() => handleRenameWorkspace(workspace.roomId)}
+            onBlur={() => handleRenameWorkspace(workspace?.roomId)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") handleRenameWorkspace(workspace.roomId);
+              if (e.key === "Enter") handleRenameWorkspace(workspace?.roomId);
               if (e.key === "Escape") setEditingRoomId(null);
             }}
             autoFocus
@@ -57,11 +57,11 @@ export default function WorkspaceCard({
           />
         ) : (
           <div className="flex-1 flex items-center gap-2 overflow-hidden">
-            <h3 className="font-medium text-white text-sm truncate tracking-tight">{workspace.name}</h3>
+            <h3 className="font-medium text-white text-sm truncate tracking-tight">{workspace?.name}</h3>
             <button
               onClick={() => {
-                setEditingRoomId(workspace.roomId);
-                setEditWorkspaceName(workspace.name);
+                setEditingRoomId(workspace?.roomId);
+                setEditWorkspaceName(workspace?.name);
               }}
               className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[#111] text-[#555] hover:text-[#737373] transition-all ml-auto shrink-0"
               title="Rename workspace"
@@ -75,31 +75,31 @@ export default function WorkspaceCard({
       {/* Date */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-[11px] text-[#555] flex items-center gap-1">
-          <Clock className="w-3 h-3" /> {formatDate(workspace.savedAt)}
+          <Clock className="w-3 h-3" /> {formatDate(workspace?.savedAt)}
         </p>
       </div>
 
       {/* Actions */}
       <div className="mt-auto pt-3 border-t border-[#1a1a1a] flex items-center gap-2">
         <Link
-          to={`/${workspace.roomId}`}
+          to={`/${workspace?.roomId}`}
           className="flex-1 flex items-center justify-center gap-1.5 h-7 rounded-md bg-white text-black text-xs font-medium hover:bg-[#ededed] transition-colors"
         >
           <Play className="w-3 h-3 fill-current" /> Open
         </Link>
 
         <button
-          onClick={() => handleCopyLink(workspace.roomId)}
+          onClick={() => handleCopyLink(workspace?.roomId)}
           className="h-7 w-7 rounded-md border border-[#1a1a1a] bg-transparent text-[#555] hover:text-white hover:border-[#333] flex items-center justify-center transition-colors"
           title="Copy link"
         >
-          {copiedId === workspace.roomId
+          {copiedId === workspace?.roomId
             ? <Check className="w-3 h-3 text-[#3fb950]" />
             : <Copy className="w-3 h-3" />}
         </button>
 
         <button
-          onClick={() => handleDelete(workspace.roomId)}
+          onClick={() => handleDelete(workspace?.roomId)}
           className="h-7 w-7 rounded-md border border-[#1a1a1a] bg-transparent text-[#555] hover:text-[#f78166] hover:border-[#f78166]/30 flex items-center justify-center transition-colors"
           title="Remove"
         >

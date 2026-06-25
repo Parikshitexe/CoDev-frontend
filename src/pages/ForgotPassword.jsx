@@ -24,7 +24,7 @@ export default function ForgotPassword() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to process request");
+      if (!response.ok) throw new Error(data?.error || "Failed to send reset link");
 
       setSuccess(true);
     } catch (err) {

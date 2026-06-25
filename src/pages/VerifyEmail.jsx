@@ -22,7 +22,7 @@ export default function VerifyEmail() {
           setMessage(data.message);
         } else {
           setStatus("error");
-          setMessage(data.error || "Verification failed");
+          setMessage(data?.error || "Verification failed");
         }
       } catch (err) {
         setStatus("error");

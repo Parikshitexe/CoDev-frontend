@@ -39,7 +39,7 @@ export default function ResetPassword() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to reset password");
+      if (!response.ok) throw new Error(data?.error || "Failed to reset password");
 
       setSuccess(true);
     } catch (err) {

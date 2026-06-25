@@ -34,7 +34,7 @@ function Register() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Registration failed");
+      if (!response.ok) throw new Error(data?.error || "Registration failed");
 
       setSuccess(true);
     } catch (err) {
