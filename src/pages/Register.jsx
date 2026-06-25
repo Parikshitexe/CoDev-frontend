@@ -133,7 +133,7 @@ function Register() {
                   type="text"
                   name="username"
                   required
-                  placeholder="johndoe"
+                  placeholder="Enter your username"
                   className="bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-[#555] focus:border-[#333] h-9 text-sm"
                 />
               </div>
@@ -143,7 +143,7 @@ function Register() {
                   type="email"
                   name="email"
                   required
-                  placeholder="you@example.com"
+                  placeholder="Enter your email"
                   className="bg-[#0a0a0a] border-[#1a1a1a] text-white placeholder:text-[#555] focus:border-[#333] h-9 text-sm"
                 />
               </div>
