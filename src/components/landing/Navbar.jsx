@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { Code2, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import codevLogo from "../../assets/codev-logo.png";
 
 export default function Navbar({ isLoggedIn }) {
   return (
@@ -8,10 +9,7 @@ export default function Navbar({ isLoggedIn }) {
         
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-6 h-6 rounded-[4px] bg-white flex items-center justify-center">
-            <Code2 className="w-3.5 h-3.5 text-black" strokeWidth={2.5} />
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-white">CoDev</span>
+          <img src={codevLogo} alt="CoDev Logo" className="h-8 w-auto object-contain rounded-[4px]" />
           {/* Live indicator */}
           
         </Link>

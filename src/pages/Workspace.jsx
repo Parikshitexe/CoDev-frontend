@@ -4,7 +4,8 @@ import { MonacoBinding } from "y-monaco";
 import { useRef, useMemo, useState, useEffect } from "react";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
-import { Code2, Users } from "lucide-react";
+import { Users } from "lucide-react";
+import codevLogo from "../assets/codev-logo.png";
 import { motion } from "framer-motion";
 
 import WorkspaceHeader from "../components/workspace/WorkspaceHeader";
@@ -524,7 +525,7 @@ function Workspace() {
       >
         <main className="z-10 w-full max-w-sm px-6">
           <div className="text-center mb-6">
-            <Code2 className="w-8 h-8 text-primary mx-auto mb-3" />
+            <img src={codevLogo} alt="CoDev Logo" className="h-10 w-auto object-contain mx-auto mb-3" />
             <h2 className="text-xl font-semibold mb-1 text-foreground">Join workspace</h2>
             <p className="text-muted-foreground text-xs font-mono truncate">{roomId}</p>
           </div>

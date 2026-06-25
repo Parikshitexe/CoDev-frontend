@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Code2, Folder, Settings, Clock, LogOut, ArrowLeft } from "lucide-react";
+import { Folder, Settings, Clock, LogOut, ArrowLeft } from "lucide-react";
+import codevLogo from "../../assets/codev-logo.png";
 
 const NAV_ITEMS = [
   { id: "workspaces", label: "Workspaces", icon: Folder },
@@ -16,10 +17,7 @@ export default function DashboardSidebar({ user, activeTab, setActiveTab, handle
       {/* Logo */}
       <div className="px-5 py-5 border-b border-[#1a1a1a]">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-[5px] bg-white flex items-center justify-center">
-            <Code2 className="w-4 h-4 text-black" strokeWidth={2.5} />
-          </div>
-          <span className="text-base font-semibold text-white tracking-tight">CoDev</span>
+          <img src={codevLogo} alt="CoDev Logo" className="h-8 w-auto object-contain rounded-[5px]" />
         </Link>
       </div>
 

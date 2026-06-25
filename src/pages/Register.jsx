@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Code2, Zap, Shield, BookMarked, Check } from "lucide-react";
+import { Zap, Shield, BookMarked, Check } from "lucide-react";
+import codevLogo from "../assets/codev-logo.png";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -55,10 +56,7 @@ function Register() {
         className="hidden lg:flex w-[420px] shrink-0 flex-col justify-between p-10 border-r border-[#1a1a1a] bg-[#050505] dot-grid-bg"
       >
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-[5px] bg-white flex items-center justify-center">
-            <Code2 className="w-4 h-4 text-black" strokeWidth={2.5} />
-          </div>
-          <span className="text-base font-semibold text-white tracking-tight">CoDev</span>
+          <img src={codevLogo} alt="CoDev Logo" className="h-8 w-auto object-contain rounded-[5px]" />
         </Link>
 
         <div>
@@ -94,10 +92,7 @@ function Register() {
       >
         {/* Mobile logo */}
         <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
-          <div className="w-6 h-6 rounded-[4px] bg-white flex items-center justify-center">
-            <Code2 className="w-3.5 h-3.5 text-black" strokeWidth={2.5} />
-          </div>
-          <span className="text-sm font-semibold text-white">CoDev</span>
+          <img src={codevLogo} alt="CoDev Logo" className="h-6 w-auto object-contain rounded-[4px]" />
         </Link>
 
         <div className="w-full max-w-sm">

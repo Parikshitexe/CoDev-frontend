@@ -1,4 +1,5 @@
-import { Code2, Play, MessageSquare, Share2, BookmarkPlus, ChevronRight } from "lucide-react";
+import { Play, MessageSquare, Share2, BookmarkPlus, ChevronRight } from "lucide-react";
+import codevLogo from "../../assets/codev-logo.png";
 import LanguageIcon from "../icons/LanguageIcon";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -38,10 +39,7 @@ export default function WorkspaceHeader({
             onClick={() => navigate("/")}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity bg-transparent px-2 h-8"
           >
-            <div className="w-5 h-5 rounded-[3px] bg-white flex items-center justify-center">
-              <Code2 className="w-3 h-3 text-black" strokeWidth={2.5} />
-            </div>
-            <span className="font-semibold tracking-tight text-sm hidden sm:block text-white">CoDev</span>
+            <img src={codevLogo} alt="CoDev Logo" className="h-7 w-auto object-contain rounded-[3px]" />
           </Button>
           {isLoggedIn && (
             <Button

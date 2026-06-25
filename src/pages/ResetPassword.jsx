@@ -1,5 +1,6 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Code2, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import codevLogo from "../assets/codev-logo.png";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -54,10 +55,7 @@ export default function ResetPassword() {
       
       {/* Brand Header */}
       <Link to="/" className="flex items-center gap-2 mb-10">
-        <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center">
-          <Code2 className="w-5 h-5 text-black" strokeWidth={2.5} />
-        </div>
-        <span className="text-xl font-semibold text-white tracking-tight">CoDev</span>
+          <img src={codevLogo} alt="CoDev Logo" className="h-8 w-auto object-contain rounded-md" />
       </Link>
 
       <motion.div
