@@ -20,7 +20,7 @@ export default function VerifyEmail() {
 
         if (response.ok) {
           setStatus("success");
-          setMessage(data.message);
+          setMessage(data?.message || 'Email verified successfully!');
         } else {
           setStatus("error");
           setMessage(data?.error || "Verification failed");
