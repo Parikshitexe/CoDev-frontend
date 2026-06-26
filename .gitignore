@@ -25,3 +25,8 @@ dist-ssr
 
 node_modules
 theme-context.md
+
+# Environment files with secrets — never commit these
+.env.local
+.env.production
+.env.*.local

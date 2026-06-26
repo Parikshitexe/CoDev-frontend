@@ -10,14 +10,11 @@ import HowItWorks from "../components/landing/HowItWorks";
 import CTASection from "../components/landing/CTASection";
 import Footer from "../components/landing/Footer";
 import { useAuth } from "../hooks/useAuth";
+import { SERVER_URL } from "../config/api";
 
 function LandingPage() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
-
-  const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    ? "http://localhost:3000"
-    : `http://${window.location.hostname}:3000`;
 
   const handleCreateRoom = async () => {
     const newRoomId = uuidv4();

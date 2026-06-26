@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { SERVER_URL } from "../config/api";
 
 export function useAuth(options = {}) {
   const { requireAuth = false } = options;
@@ -25,10 +26,6 @@ export function useAuth(options = {}) {
 
   const logout = async () => {
     try {
-      const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? "http://localhost:3000"
-        : `http://${window.location.hostname}:3000`;
-      
       await fetch(`${SERVER_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'omit' // We are clearing the cookie on backend anyway

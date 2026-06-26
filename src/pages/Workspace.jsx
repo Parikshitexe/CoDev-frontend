@@ -13,11 +13,9 @@ import ParticipantList from "../components/workspace/ParticipantList";
 import TerminalPanel from "../components/workspace/TerminalPanel";
 import ChatPanel from "../components/workspace/ChatPanel";
 import { useAuth } from "../hooks/useAuth";
+import { SERVER_URL } from "../config/api";
 import { toast } from "sonner";
 
-const SERVER_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-  ? "http://localhost:3000"
-  : `http://${window.location.hostname}:3000`;
 
 const colors = ["#c4b5fd", "#6ee7b7", "#93c5fd", "#fcd34d", "#fca5a5"];
 const stringToColor = (str) => {

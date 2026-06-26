@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
+import { SERVER_URL } from "../config/api";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -14,7 +15,7 @@ export default function VerifyEmail() {
       if (hasFetched.current) return;
       hasFetched.current = true;
       try {
-        const response = await fetch(`http://localhost:3000/api/auth/verify/${token}`);
+        const response = await fetch(`${SERVER_URL}/api/auth/verify/${token}`);
         const data = await response.json();
 
         if (response.ok) {

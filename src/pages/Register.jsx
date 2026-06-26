@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { SERVER_URL } from "../config/api";
 import { Zap, Shield, BookMarked, Check } from "lucide-react";
 import codevLogo from "../assets/codev-logo.png";
 import { useState } from "react";
@@ -27,7 +28,7 @@ function Register() {
     const password = e.target.password.value;
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/register", {
+      const response = await fetch(`${SERVER_URL}/api/auth/register`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SERVER_URL } from "../config/api";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import codevLogo from "../assets/codev-logo.png";
 import { useState } from "react";
@@ -18,7 +19,7 @@ export default function ForgotPassword() {
     const email = e.target.email.value;
 
     try {
-      const response = await fetch("http://localhost:3000/api/auth/forgot-password", {
+      const response = await fetch(`${SERVER_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })

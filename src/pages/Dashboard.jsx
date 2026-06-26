@@ -17,6 +17,7 @@ import {
   Clock
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { SERVER_URL } from "../config/api";
 import CreateWorkspaceModal from "../components/dashboard/CreateWorkspaceModal";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import ConfirmModal from "../components/dashboard/ConfirmModal";
@@ -45,7 +46,7 @@ function Dashboard() {
 
     const fetchWorkspaces = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/workspaces", {
+        const response = await fetch(`${SERVER_URL}/api/workspaces`, {
           credentials: 'include'
         });
         if (response.ok) {
@@ -77,7 +78,7 @@ function Dashboard() {
     const newRoomId = uuidv4();
 
     try {
-      const response = await fetch("http://localhost:3000/api/workspaces", {
+      const response = await fetch(`${SERVER_URL}/api/workspaces`, {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -111,7 +112,7 @@ function Dashboard() {
     if (!roomId) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
+      const response = await fetch(`${SERVER_URL}/api/workspaces/${roomId}`, {
         method: "DELETE",
         credentials: 'include'
       });
@@ -152,7 +153,7 @@ function Dashboard() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/workspaces/${roomId}`, {
+      const response = await fetch(`${SERVER_URL}/api/workspaces/${roomId}`, {
         method: "PUT",
         credentials: 'include',
         headers: {
