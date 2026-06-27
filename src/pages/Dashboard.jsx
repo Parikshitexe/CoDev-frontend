@@ -21,6 +21,7 @@ import { SERVER_URL } from "../config/api";
 import CreateWorkspaceModal from "../components/dashboard/CreateWorkspaceModal";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import ConfirmModal from "../components/dashboard/ConfirmModal";
+import { copyToClipboard } from "../lib/utils";
 import { toast } from "sonner";
 import WorkspaceCard from "../components/dashboard/WorkspaceCard";
 import { motion } from "framer-motion";
@@ -131,9 +132,9 @@ function Dashboard() {
     }
   };
 
-  const handleCopyLink = (roomId) => {
+  const handleCopyLink = async (roomId) => {
     const link = `${window.location.origin}/${roomId}`;
-    navigator.clipboard.writeText(link);
+    await copyToClipboard(link);
     setCopiedId(roomId);
     toast.success("Link copied to clipboard!");
     setTimeout(() => setCopiedId(null), 2000);

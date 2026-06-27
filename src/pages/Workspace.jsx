@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 
 import WorkspaceHeader from "../components/workspace/WorkspaceHeader";
 import ParticipantList from "../components/workspace/ParticipantList";
+import { copyToClipboard } from '../lib/utils';
 import TerminalPanel from "../components/workspace/TerminalPanel";
 import ChatPanel from "../components/workspace/ChatPanel";
 import { useAuth } from "../hooks/useAuth";
@@ -145,9 +146,9 @@ function Workspace() {
     }
   };
 
-  const handleShareWorkspace = () => {
+  const handleShareWorkspace = async () => {
     const cleanUrl = `${window.location.origin}/${roomId}`;
-    navigator.clipboard.writeText(cleanUrl);
+    await copyToClipboard(cleanUrl);
     toast.success("Workspace link copied!");
     setShowShareTooltip(true);
     setTimeout(() => setShowShareTooltip(false), 2000);
